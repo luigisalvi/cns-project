@@ -1,0 +1,6 @@
+<div class="upload-button">
+  <button mat-fab extended color="basic" (click)="fileInput.click()">
+    <mat-icon>upload</mat-icon>  Select a local video file
+  </button>
+  <input #fileInput type="file" accept="video/*" (change)="onFileSelected($event)" style="display: none;">
+</div>

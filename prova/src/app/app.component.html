@@ -1,2 +1,21 @@
-<app-videojs [options]="{ autoplay: true, controls:true, sources: [{ src: 'http://localhost:8000/hls/luigi.m3u8', type: 'application/x-mpegURL' }]}"></app-videojs>
+<!--<app-url-frm></app-url-frm>-->
+<!-- centered div -->
+<div class="container">
+  <div class="inner">
+    <h1>VideoJS local player</h1>
+    <app-videojs></app-videojs>
+    <app-video-upload></app-video-upload>
+    <div class="video-info" *ngIf="videoInfo.name !== ''">
+      <span><i>&nbsp; <b>playing:</b> {{ videoInfo.name }} &nbsp;</i></span>
+      <br>
+      <span><i>&nbsp; <b>format:</b> {{ videoInfo.type }} &nbsp;</i></span>
+      <br>
+      <span><i>&nbsp; <b>size:</b> {{ videoInfo.size }} MB &nbsp;</i></span>
+    </div>
+  </div>
+
+  <p class="footer">
+    Salvi Luigi, Santilio Nicolo 2023 - Politecnico di Bari
+  </p>
+</div>
 

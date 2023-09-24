@@ -11,13 +11,26 @@ const config = {
   http: {
     port: 8000, // Porta HTTP per la visualizzazione dello stream
     allow_origin: '*',
+    mediaroot: "./server/media"
   },
-  hls: {
-    enabled: true, // Abilita la generazione dello stream HLS
-    path: 'C:\\Users\\39349\\Desktop\\angular-prj\\hls-stream', // Percorso in cui verranno generati gli stream HLS
-    fragment: 5, // Durata dei frammenti HLS in secondi (opzionale)
-    // Altre opzioni specifiche per HLS se necessario
-  },
+  trans: {
+    ffmpeg: 'C:/Users/nsant/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-6.0-full_build/bin/ffmpeg.exe',
+    tasks: [
+        {
+          app: 'live',
+          vc: "copy",
+          vcParam: [],
+          ac: "aac",
+          acParam: ['-ab', '64k', '-ac', '1', '-ar', '44100'],
+          rtmp:true,
+          rtmpApp:'live2',
+          hls: true,
+          hlsFlags: '[hls_time=2:hls_list_size=3:hls_flags=delete_segments]',
+          dash: true,
+          dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+        }
+    ]
+  }
 };
 
 const nms = new NodeMediaServer(config);

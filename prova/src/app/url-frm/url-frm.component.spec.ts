@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { VjsPlayerComponent } from './videojs.component';
+import { UrlFrmComponent } from './url-frm.component';
 
-describe('VideojsComponent', () => {
-  let component: VjsPlayerComponent;
-  let fixture: ComponentFixture<VjsPlayerComponent>;
+describe('UrlFrmComponent', () => {
+  let component: UrlFrmComponent;
+  let fixture: ComponentFixture<UrlFrmComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [VjsPlayerComponent]
+      declarations: [UrlFrmComponent]
     });
-    fixture = TestBed.createComponent(VjsPlayerComponent);
+    fixture = TestBed.createComponent(UrlFrmComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
