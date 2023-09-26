@@ -40,6 +40,65 @@ import {Subscription} from "rxjs";
       private urlService: UrlService
     ) { }
 
+    // Server request functions 
+    play_event () {
+      const url = 'https://184f-151-50-139-61.ngrok-free.app/stream/start';
+      let play_data = {
+        sreamId:'1234',
+        resolution:'1080' 
+      }
+
+      fetch(url , {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify(play_data),
+        headers: {'Content-type': 'application/json; charset=UTF-8'}
+      } )
+      // Gestione degli errori //
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Errore nella chiamata al server');
+        }
+        return response.json();
+      })
+      .then(data => {
+      })
+      .catch(error => {
+        console.error('Errore:', error);
+      });
+  
+  } //play_event
+
+    pause_event () {
+      const url = 'https://184f-151-50-139-61.ngrok-free.app/stream/start';
+
+      let play_data = {
+        sreamId:'1234',
+        resolution:'1080' 
+      }
+    
+      fetch(url , {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify(play_data),
+        headers: {'Content-type': 'application/json; charset=UTF-8'}
+      } )
+
+      // Gestione degli errori //
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Errore nella chiamata al server');
+        }
+        return response.json();
+      })
+      .then(data => {
+      })
+      .catch(error => {
+        console.error('Errore:', error);
+      });
+
+    } //pause_event
+
     ngOnInit() {
       // instantiate Video.js
       this.player = videojs(this.target.nativeElement,
@@ -64,6 +123,8 @@ import {Subscription} from "rxjs";
             }
           );
       });
+      this.player.on('play', this.play_event);
+      this.player.on('pause', this.pause_event);
     }
 
     ngOnDestroy() {
