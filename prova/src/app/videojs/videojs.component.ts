@@ -41,10 +41,10 @@ import {Subscription} from "rxjs";
     ) { }
 
     // Server request functions 
-    play_event () {
+    play_call () {
       const url = 'https://184f-151-50-139-61.ngrok-free.app/stream/start';
       let play_data = {
-        sreamId:'1234',
+        streamId:'1234',
         resolution:'1080' 
       }
 
@@ -69,11 +69,11 @@ import {Subscription} from "rxjs";
   
   } //play_event
 
-    pause_event () {
-      const url = 'https://184f-151-50-139-61.ngrok-free.app/stream/start';
+    pause_call () {
+      const url = 'https://';
 
       let play_data = {
-        sreamId:'1234',
+        streamId:'1234',
         resolution:'1080' 
       }
     
@@ -99,6 +99,18 @@ import {Subscription} from "rxjs";
 
     } //pause_event
 
+    view_event() {
+      let currentTime = this.player.currentTime();
+      let videoWatched = false;
+      console.log('Current Time', currentTime);
+      if (currentTime > 10 && !videoWatched)  {
+        videoWatched = true;
+        console.log('Video Watched');
+        this.player.off('timeupdate');
+        this.play_call;
+      }
+    } //view_event
+
     ngOnInit() {
       // instantiate Video.js
       this.player = videojs(this.target.nativeElement,
@@ -109,6 +121,7 @@ import {Subscription} from "rxjs";
     }
 
     ngAfterViewInit(): void {
+      // Player Settling 
       this.urlServiceSubscription = this.urlService.url$.subscribe(
         (value: {url: string, type: string}) => {
 
@@ -123,8 +136,10 @@ import {Subscription} from "rxjs";
             }
           );
       });
-      this.player.on('play', this.play_event);
-      this.player.on('pause', this.pause_event);
+      // Event Listeners 
+      //this.player.on('play', this.play_call);
+      this.player.on('pause', this.pause_call);
+      this.player.on('timeupdate', this.view_event);
     }
 
     ngOnDestroy() {
