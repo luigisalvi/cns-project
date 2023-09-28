@@ -34,6 +34,7 @@ import {Subscription} from "rxjs";
     player!: videojs.Player;
 
     urlServiceSubscription: Subscription = new Subscription();
+    videoWatched = false;
 
     constructor(
       private elementRef: ElementRef,
@@ -67,7 +68,7 @@ import {Subscription} from "rxjs";
         console.error('Errore:', error);
       });
   
-  } //play_event
+  } //play_call
 
     pause_call () {
       const url = 'https://';
@@ -97,7 +98,7 @@ import {Subscription} from "rxjs";
         console.error('Errore:', error);
       });
 
-    } //pause_event
+    } //pause_call
 
     view_event() {
       let currentTime = this.player.currentTime();
@@ -109,6 +110,14 @@ import {Subscription} from "rxjs";
         this.player.off('timeupdate');
         this.play_call;
       }
+      
+      if(this.videoWatched===true) {
+      //this.play_call();
+      // Azzeramento current Time che è la seconda variabile di controllo interna
+      currentTime=0;
+      }
+
+      
     } //view_event
 
     ngOnInit() {
@@ -138,7 +147,8 @@ import {Subscription} from "rxjs";
       });
       // Event Listeners 
       //this.player.on('play', this.play_call);
-      this.player.on('pause', this.pause_call);
+      //this.player.on('pause', this.pause_call);
+      
       this.player.on('timeupdate', this.view_event);
     }
 
