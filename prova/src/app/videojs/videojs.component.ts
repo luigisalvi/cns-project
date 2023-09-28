@@ -100,23 +100,15 @@ import {Subscription} from "rxjs";
 
     } //pause_call
 
-    view_event() {
+    view_event=() => {
       let currentTime = this.player.currentTime();
       console.log('Current Time', currentTime);
-      if (currentTime > 10 && !videoWatched)  {
-        videoWatched = true;
+      if (currentTime > 10 && !this.videoWatched)  {
+        this.videoWatched = true;
         console.log('Video Watched');
         this.player.off('timeupdate');
-        this.play_call;
+        
       }
-      
-      if(this.videoWatched===true) {
-      //this.play_call();
-      // Azzeramento current Time che è la seconda variabile di controllo interna
-      currentTime=0;
-      }
-
-      
     } //view_event
 
     ngOnInit() {
@@ -148,6 +140,10 @@ import {Subscription} from "rxjs";
       //this.player.on('play', this.play_call);
       //this.player.on('pause', this.pause_call);
       this.player.on('ended', () => {
+        this.player.on('timeupdate', this.view_event);
+      })
+
+      this.player.on('sourceset', () => {
         this.player.on('timeupdate', this.view_event);
       })
     }
