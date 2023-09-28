@@ -107,6 +107,7 @@ import {Subscription} from "rxjs";
         this.videoWatched = true;
         console.log('Video Watched');
         this.player.off('timeupdate');
+        this.play_call(); //Server call;
         
       }
     } //view_event
@@ -139,13 +140,23 @@ import {Subscription} from "rxjs";
       // Event Listeners 
       //this.player.on('play', this.play_call);
       //this.player.on('pause', this.pause_call);
+      
+      //This event listener implements the views video policy
+      //in case of ended video.
+      //https://docs.videojs.com/player#event:ended:~:text=line%20110-,ended,-%23
       this.player.on('ended', () => {
+        this.videoWatched=false;
         this.player.on('timeupdate', this.view_event);
       })
-
+      
+      //This event listener implements the views video policy
+      //in case of video source change. 
+      //https://docs.videojs.com/player#event:sourceset:~:text=line%201831-,sourceset,-%23
       this.player.on('sourceset', () => {
+        this.videoWatched=false;
         this.player.on('timeupdate', this.view_event);
       })
+      
     }
 
     ngOnDestroy() {
