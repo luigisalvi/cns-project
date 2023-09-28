@@ -147,8 +147,9 @@ import {Subscription} from "rxjs";
       // Event Listeners 
       //this.player.on('play', this.play_call);
       //this.player.on('pause', this.pause_call);
-      
-      this.player.on('timeupdate', this.view_event);
+      this.player.on('ended', () => {
+        this.player.on('timeupdate', this.view_event);
+      })
     }
 
     ngOnDestroy() {
