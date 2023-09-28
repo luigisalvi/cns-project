@@ -102,7 +102,6 @@ import {Subscription} from "rxjs";
 
     view_event() {
       let currentTime = this.player.currentTime();
-      let videoWatched = false;
       console.log('Current Time', currentTime);
       if (currentTime > 10 && !videoWatched)  {
         videoWatched = true;
