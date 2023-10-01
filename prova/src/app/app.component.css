@@ -10,7 +10,7 @@
 
 .inner {
   /* centered vertically */
-  padding-top: 10%;
+  padding-top: 30px;
   display: flex;
   flex-direction: column;
   /* flex-wrap: nowrap; */

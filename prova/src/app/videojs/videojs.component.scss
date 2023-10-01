@@ -4,8 +4,8 @@
 }
 
 .video-js {
-  width: 640px !important;
-  height: 264px !important;
+  min-width: 300px !important;
+  height: auto !important;
 }
 
 .vjs-big-play-button {
