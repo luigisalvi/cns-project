@@ -160,6 +160,7 @@ import TextTrackCue = videojs.TextTrackCueList.TextTrackCue;
 
 
     detectMediaChange() {
+      //https://github.com/videojs/http-streaming#segment-metadata
       let tracks = this.player.textTracks();
       let segmentMetadataTrack: TextTrack | undefined = undefined;
 
