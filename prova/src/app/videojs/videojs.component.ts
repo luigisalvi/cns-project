@@ -4,6 +4,7 @@ import videojs, {VideoJsPlayerOptions} from 'video.js';
 import {UrlService} from "../url.service";
 import {Subscription} from "rxjs";
 import TextTrackCue = videojs.TextTrackCueList.TextTrackCue;
+import { play_call, pause_call } from './server-api';
 
 
 
@@ -59,66 +60,8 @@ import TextTrackCue = videojs.TextTrackCueList.TextTrackCue;
       private urlService: UrlService
     ) { }
 
-
-    // Server request functions
-    play_call () {
-      const url = 'https://184f-151-50-139-61.ngrok-free.app/stream/view'; //Server endpoint
-      let play_data = {
-        streamId:'1234',
-        resolution:'1080'
-      }
-
-      fetch(url , {
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify(play_data),
-        headers: {'Content-type': 'application/json; charset=UTF-8'}
-      } )
-      // Gestione degli errori //
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Errore nella chiamata al server');
-        }
-        return response.json();
-      })
-      .then(data => {
-      })
-      .catch(error => {
-        console.error('Errore:', error);
-      });
-
-  } //play_event
-/*
-    pause_call () {
-      const url = 'https://184f-151-50-139-61.ngrok-free.app/stream/start';
-
-      let pause_data = {
-        streamId:'1234',
-        resolution:'1080'
-      }
-
-      fetch(url , {
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify(pause_data),
-        headers: {'Content-type': 'application/json; charset=UTF-8'}
-      } )
-
-      // Gestione degli errori //
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Errore nella chiamata al server');
-        }
-        return response.json();
-      })
-      .then(data => {
-      })
-      .catch(error => {
-        console.error('Errore:', error);
-      });
-
-    } //pause_event */
-
+    // METRICS EVALUATION FUNCTIONS 
+    
     rebuffering=() => {
       this.player.on('waiting', () => {
         this.bufferingStartTime = new Date().getTime();
@@ -150,14 +93,12 @@ import TextTrackCue = videojs.TextTrackCueList.TextTrackCue;
       let downloadRate = (this.player.tech({ IWillNotUseThisInPlugins: true}).vhs.bandwidth!) / 1000000; //Mbps
       this.downloadRate = downloadRate;
 
-
       //https://github.com/videojs/http-streaming#vhsstats
       // @ts-ignore
       let  downloaded_bytes = this.player.tech({ IWillNotUseThisInPlugins: true}).vhs.stats.mediaBytesTransferred!;
       this.downloadedBytes += downloaded_bytes;
 
     } //user_metrics
-
 
     detectMediaChange() {
       //https://github.com/videojs/http-streaming#segment-metadata
@@ -202,12 +143,11 @@ import TextTrackCue = videojs.TextTrackCueList.TextTrackCue;
 
     view_event = () => {
       let currentTime = this.player.currentTime();
-      // console.log('Playback Quality', playbackQuality);
       if (currentTime > 10 && !this.videoWatched)  {
         this.videoWatched = true;
         console.log('Video Watched');
-        // this.player.off('timeupdate');
-        // this.play_call(); //Server call
+        //to-do: get or assign a streamId value
+        //play_call(streamId); //Server call
       }
 
       this.user_metrics();
