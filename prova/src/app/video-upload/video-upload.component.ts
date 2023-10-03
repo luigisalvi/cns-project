@@ -12,16 +12,17 @@ export class VideoUploadComponent {
   constructor(private urlService: UrlService) { }
 
   onFileSelected(event: any) {
-    /*[0] è l'indice nell'array FileList. Poiché l'utente può selezionare più file,
-    [0] restituisce il primo file nell'elenco, cioè il file selezionato dall'utente.
-    Se l'utente ha selezionato un solo file, event.target.files[0] restituirà quel file.*/
+    /*[0] index allows to select from the files'list just one of them: if the user
+    selects more than one file it will autocatically be assigned to the variable file
+    the first selected file. */
+    
     const file = event.target.files[0];
 
 
     if (file) {
-      const videoURL = URL.createObjectURL(file); /* Tipo string */
-      // this.playVideo(videoURL);
-      /*Display in console di alcune info del file */
+      const videoURL = URL.createObjectURL(file); // string obj
+      // this.playVideo(videoURL); // if needed a server call to inform about local video upload, please choose the appropirate call from ../videojs/server-api.ts
+      /* Info's callbacks */
       console.log("Nome del file:", file.name);
       console.log("Tipo del file:", file.type);
       console.log("Dimensione del file:", file.size, "byte");
