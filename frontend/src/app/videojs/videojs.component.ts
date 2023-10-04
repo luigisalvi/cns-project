@@ -60,7 +60,7 @@ import { play_call, pause_call } from './server-api';
       private urlService: UrlService
     ) { }
 
-    // METRICS EVALUATION FUNCTIONS 
+    // METRICS EVALUATION FUNCTIONS //
     
     rebuffering=() => {
       this.player.on('waiting', () => {
@@ -161,6 +161,27 @@ import { play_call, pause_call } from './server-api';
       this.screenSize = {width: width, height: height};
     }
 
+    // METRICS COLLECTION //
+
+    sendMetrics(trigger: string) {
+      // Send metrics to server
+      console.log('===== SENDING METRICS ======');
+      // Add the session id --> USER
+      // Add the video id --> STREAM
+      console.log('Trigger', trigger);
+      console.log('Timestamp (iso)', new Date().toISOString());
+      console.log('Downloaded Bytes', this.downloadedBytes);
+      console.log('Streamed Time (in seconds)', this.player.currentTime());
+      console.log('Current Media Level', this.currentMediaLevel);
+      console.log('Buffering Times', this.bufferingTimes);
+      console.log('Screen Size', this.screenSize);
+      console.log('Download Rate', this.downloadRate);
+      console.log('Bandwidth', this.bandwidth);
+      console.log('===== END METRICS ======');
+    }
+
+    // COMPONENT'S LIFCYCLE HOOKS //
+
     ngOnInit() {
       //video.js init
       this.player = videojs(this.target.nativeElement,
@@ -171,6 +192,7 @@ import { play_call, pause_call } from './server-api';
 
       this.getScreenSize();
     }
+
 
     ngAfterViewInit(): void {
 
@@ -193,17 +215,16 @@ import { play_call, pause_call } from './server-api';
 
       // Event Listeners
 
-      //this.player.on('play', this.play_call);
+      this.player.on('play', () => {
+        let width = this.player.currentDimension('width');
+        let height = this.player.currentDimension('height');
+        //this.play_call();
+      })
 
       this.player.on('pause', () => {
         this.sendMetrics('pause');
         //this.pause_call();
       });
-
-      this.player.on('play', () => {
-        let width = this.player.currentDimension('width');
-        let height = this.player.currentDimension('height');
-      })
 
       // this.player.on('playing', this.user_metrics);
 
@@ -211,8 +232,8 @@ import { play_call, pause_call } from './server-api';
       //in case of ended video.
       //https://docs.videojs.com/player#event:ended:~:text=line%20110-,ended,-%23
       this.player.on('ended', () => {
-        this.sendMetrics('ended');
         this.detectMediaChange();
+        this.sendMetrics('ended'); //no needed: included in detectMediaChange. Choose one of them(?)
         this.videoWatched=false;
         this.player.on('timeupdate', this.view_event);
       })
@@ -221,31 +242,16 @@ import { play_call, pause_call } from './server-api';
       //in case of video source change.
       //https://docs.videojs.com/player#event:sourceset:~:text=line%201831-,sourceset,-%23
       this.player.on('sourceset', () => {
-        this.videoWatched=false;
         this.detectMediaChange();
+        this.videoWatched=false;
         this.player.on('timeupdate', this.view_event);
       })
-
+      
+      //This function evaulate each buffering event occurred while 
+      //playing a video and generate a set of metrics sent to the server-side.
       this.rebuffering();
 
       //---------------//
-    }
-
-    sendMetrics(trigger: string) {
-      // Send metrics to server
-      console.log('===== SENDING METRICS ======');
-      // Add the session id --> USER
-      // Add the video id --> STREAM
-      console.log('Trigger', trigger);
-      console.log('Timestamp (iso)', new Date().toISOString());
-      console.log('Downloaded Bytes', this.downloadedBytes);
-      console.log('Streamed Time (in seconds)', this.player.currentTime());
-      console.log('Current Media Level', this.currentMediaLevel);
-      console.log('Buffering Times', this.bufferingTimes);
-      console.log('Screen Size', this.screenSize);
-      console.log('Download Rate', this.downloadRate);
-      console.log('Bandwidth', this.bandwidth);
-      console.log('===== END METRICS ======');
     }
 
     ngOnDestroy() {
