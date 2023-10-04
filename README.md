@@ -5,7 +5,7 @@ Angular webapp
 ## Run the project
 
 ```
-cd prova
+cd frontend
 npm install
 npm run start
 ```
