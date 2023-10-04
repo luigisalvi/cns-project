@@ -148,6 +148,7 @@ import { play_call, pause_call } from './server-api';
         console.log('Video Watched');
         //to-do: get or assign a streamId value
         //play_call(streamId); //Server call
+        //Call view server 
       }
 
       this.user_metrics();
@@ -211,6 +212,7 @@ import { play_call, pause_call } from './server-api';
       //https://docs.videojs.com/player#event:ended:~:text=line%20110-,ended,-%23
       this.player.on('ended', () => {
         this.sendMetrics('ended');
+        this.detectMediaChange();
         this.videoWatched=false;
         this.player.on('timeupdate', this.view_event);
       })
