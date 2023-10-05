@@ -59,7 +59,7 @@ import { session_get, session_post, streams_get, play_call, pause_call, view_pos
     ) { }
 
     // METRICS EVALUATION FUNCTIONS //
-    
+
     rebuffering=() => {
       this.player.on('waiting', () => {
         this.bufferingStartTime = new Date().getTime();
@@ -144,7 +144,7 @@ import { session_get, session_post, streams_get, play_call, pause_call, view_pos
       if (currentTime > 10 && !this.videoWatched)  {
         this.videoWatched = true;
         console.log('Video Watched');
-        
+
         //Server call for view event tracker
         view_post(this.streamId, this.currentMediaLevel?.resolution!);
       }
@@ -180,19 +180,19 @@ import { session_get, session_post, streams_get, play_call, pause_call, view_pos
       console.log('Download Rate', this.downloadRate);
       console.log('Bandwidth', this.bandwidth);
       console.log('===== END METRICS ======');
-      
+
       //Server call
-      metrics_post(this.streamId, trigger, timestamp, this.screenSize,this.currentMediaLevel!, streamedTime, 
+      metrics_post(this.streamId, trigger, timestamp, this.screenSize,this.currentMediaLevel!, streamedTime,
         this.downloadedBytes, this.bufferingTimes,this.downloadRate, this.bandwidth )
     }
 
     // COMPONENT'S LIFCYCLE HOOKS //
 
-    ngOnInit() {
-      
+    async ngOnInit() {
+
       // Server call for session set up
       session_post();
-      
+
       //video.js init
       this.player = videojs(this.target.nativeElement,
         this.options, function onPlayerReady() {
@@ -201,7 +201,11 @@ import { session_get, session_post, streams_get, play_call, pause_call, view_pos
       );
 
       this.getScreenSize();
-      this.streamId = streams_get()?.at(0)?.id!
+
+      // Get first stream
+      let stream = (await streams_get()).at(0);
+      this.streamId = stream?.id!
+      this.urlService.setVideo(stream?.ref!, stream?.name!);
     }
 
 
@@ -257,8 +261,8 @@ import { session_get, session_post, streams_get, play_call, pause_call, view_pos
         this.videoWatched=false;
         this.player.on('timeupdate', this.view_event);
       })
-      
-      //This function evaulate each buffering event occurred while 
+
+      //This function evaulate each buffering event occurred while
       //playing a video and generate a set of metrics sent to the server-side.
       this.rebuffering();
 

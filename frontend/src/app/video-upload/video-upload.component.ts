@@ -15,7 +15,7 @@ export class VideoUploadComponent {
     /*[0] index allows to select from the files'list just one of them: if the user
     selects more than one file it will autocatically be assigned to the variable file
     the first selected file. */
-    
+
     const file = event.target.files[0];
 
 
@@ -27,7 +27,7 @@ export class VideoUploadComponent {
       console.log("Tipo del file:", file.type);
       console.log("Dimensione del file:", file.size, "byte");
 
-      this.urlService.setVideo(videoURL, file.name, file.type, file.size)
+      this.urlService.setVideo(videoURL, file.name)
     }
   }
 
