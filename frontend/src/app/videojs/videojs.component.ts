@@ -7,7 +7,6 @@ import TextTrackCue = videojs.TextTrackCueList.TextTrackCue;
 import { session_get, session_post, streams_get, play_call, pause_call, view_post, metrics_post, m3u8_get } from './server-api';
 
 
-
 @Component({
     selector: 'app-videojs',
     templateUrl: './videojs.component.html',
@@ -24,8 +23,6 @@ import { session_get, session_post, streams_get, play_call, pause_call, view_pos
       // autoplay: true,
       //liveui: false,
       fluid: true,
-      width: 640,
-      height: 264,
       enableSourceset: true,
       html5: {
         vhs: {
@@ -52,6 +49,7 @@ import { session_get, session_post, streams_get, play_call, pause_call, view_pos
     private screenSize: {width: number, height: number} = {width: 0, height: 0};
     private streamId: string='';
 
+    liveCounter: number = 0;
 
     constructor(
       private elementRef: ElementRef,
@@ -206,6 +204,29 @@ import { session_get, session_post, streams_get, play_call, pause_call, view_pos
       let stream = (await streams_get()).at(0);
       this.streamId = stream?.id!
       this.urlService.setVideo(stream?.ref!, stream?.name!);
+
+
+      const ws = new WebSocket('ws://localhost:3001/live-users?streamId=' + this.streamId);
+
+      ws.onopen = () => {
+        console.log('Connected to server');
+
+        ws.send('Hello, server!');
+      };
+
+      ws.onmessage = (message: any) => {
+        console.log(`Received message from server: ${message.data}`);
+        let jsonMessage = JSON.parse(message.data);
+        if (jsonMessage.hasOwnProperty('liveUsersCount')) {
+          this.liveCounter = jsonMessage.liveUsersCount;
+        }
+      }
+
+      ws.onclose = () => {
+        console.log('Disconnected from server');
+      }
+
+
     }
 
 

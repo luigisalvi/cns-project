@@ -18,13 +18,13 @@ import {MatIconModule} from '@angular/material/icon';
     UrlFrmComponent,
     VideoUploadComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    MatIconModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        MatIconModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
