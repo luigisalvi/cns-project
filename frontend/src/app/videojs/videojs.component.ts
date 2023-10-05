@@ -4,7 +4,7 @@ import videojs, {VideoJsPlayerOptions} from 'video.js';
 import {UrlService} from "../url.service";
 import {Subscription} from "rxjs";
 import TextTrackCue = videojs.TextTrackCueList.TextTrackCue;
-import { play_call, pause_call } from './server-api';
+import { session_get, session_post, streams_get, play_call, pause_call, view_post, metrics_post, m3u8_get } from './server-api';
 
 
 
@@ -47,13 +47,11 @@ import { play_call, pause_call } from './server-api';
     private downloadRate: number = 0;
     private bandwidth: number = 0;
     private currentMediaLevel: {resolution: string, bandwidth: number, level: number, media: string} | undefined = undefined;
-    private bufferingTimes: [{
-      timestamp: string,
-      videoTimestamp: number,
-      duration: number
-    }?] = [];
+    private bufferingTimes: [{timestamp: string,videoTimestamp: number,duration: number}?] = [];
     private totalStreamedTime: number = 0;
     private screenSize: {width: number, height: number} = {width: 0, height: 0};
+    private streamId: string='';
+
 
     constructor(
       private elementRef: ElementRef,
@@ -146,9 +144,9 @@ import { play_call, pause_call } from './server-api';
       if (currentTime > 10 && !this.videoWatched)  {
         this.videoWatched = true;
         console.log('Video Watched');
-        //to-do: get or assign a streamId value
-        //play_call(streamId); //Server call
-        //Call view server 
+        
+        //Server call for view event tracker
+        view_post(this.streamId, this.currentMediaLevel?.resolution!);
       }
 
       this.user_metrics();
@@ -164,25 +162,37 @@ import { play_call, pause_call } from './server-api';
     // METRICS COLLECTION //
 
     sendMetrics(trigger: string) {
+      //Inner variables
+      let timestamp = new Date().toISOString();
+      let streamedTime = this.player.currentTime();
+
       // Send metrics to server
       console.log('===== SENDING METRICS ======');
       // Add the session id --> USER
       // Add the video id --> STREAM
       console.log('Trigger', trigger);
-      console.log('Timestamp (iso)', new Date().toISOString());
+      console.log('Timestamp (iso)', timestamp);
       console.log('Downloaded Bytes', this.downloadedBytes);
-      console.log('Streamed Time (in seconds)', this.player.currentTime());
+      console.log('Streamed Time (in seconds)', streamedTime);
       console.log('Current Media Level', this.currentMediaLevel);
       console.log('Buffering Times', this.bufferingTimes);
       console.log('Screen Size', this.screenSize);
       console.log('Download Rate', this.downloadRate);
       console.log('Bandwidth', this.bandwidth);
       console.log('===== END METRICS ======');
+      
+      //Server call
+      metrics_post(this.streamId, trigger, timestamp, this.screenSize,this.currentMediaLevel!, streamedTime, 
+        this.downloadedBytes, this.bufferingTimes,this.downloadRate, this.bandwidth )
     }
 
     // COMPONENT'S LIFCYCLE HOOKS //
 
     ngOnInit() {
+      
+      // Server call for session set up
+      session_post();
+      
       //video.js init
       this.player = videojs(this.target.nativeElement,
         this.options, function onPlayerReady() {
@@ -191,6 +201,7 @@ import { play_call, pause_call } from './server-api';
       );
 
       this.getScreenSize();
+      this.streamId = streams_get()?.at(0)?.id!
     }
 
 
@@ -218,12 +229,12 @@ import { play_call, pause_call } from './server-api';
       this.player.on('play', () => {
         let width = this.player.currentDimension('width');
         let height = this.player.currentDimension('height');
-        //this.play_call();
+        //play_call(streamId);
       })
 
       this.player.on('pause', () => {
         this.sendMetrics('pause');
-        //this.pause_call();
+        //pause_call(streamId);
       });
 
       // this.player.on('playing', this.user_metrics);
