@@ -66,13 +66,6 @@ export function streams_get(): Promise<[{
   resolutions: [string]
 }]> {
 
-  let r: [{
-    id: string,
-    name: string,
-    description: string,
-    ref: string,
-    resolutions: [string]
-  }] | undefined = undefined;
   const url = server + '/streams'; //Server endpoint for session checking/creation
 
   return fetch(url, {

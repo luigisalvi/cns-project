@@ -46,12 +46,10 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     media: string
   } | undefined = undefined;
   private bufferingTimes: [{ timestamp: string, videoTimestamp: number, duration: number }?] = [];
-  private totalStreamedTime: number = 0;
   private screenSize: { width: number, height: number } = {width: 0, height: 0};
   private streamId: string = '';
 
   constructor(
-    private elementRef: ElementRef
   ) {
   }
 
@@ -203,7 +201,7 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   trackLiveUser(streamId: string) {
     // Track live users using WekSocket connection //
-    const ws = new WebSocket('ws://localhost:3001/live-users?streamId=' + this.streamId);
+    const ws = new WebSocket('ws://localhost:3001/live-users?streamId=' + streamId);
 
     ws.onopen = () => {
       console.log('Connected to server');
@@ -259,8 +257,6 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): void {
     // Event Listeners
     this.player.on('play', () => {
-      let width = this.player.currentDimension('width');
-      let height = this.player.currentDimension('height');
       //Track play event (if needed)
       //play_call(streamId);
     })
