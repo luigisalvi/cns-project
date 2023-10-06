@@ -13,9 +13,8 @@ cd frontend
 npm install
 npm run start
 ```
+## System Architecture
 
-
-## Versions 
-
-
-![diagram](ng_diagram.png)
+<div align="center">
+<img src=architecture-diagram.png>
+</div>
