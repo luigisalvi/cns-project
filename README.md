@@ -1,17 +1,21 @@
-# CNS Project
+# CNS Project 
 
 Angular webapp
 
-## Run the project
+## Run the backend project 
+Before running this repository, which contains all the frontend APIs, the backend set-up is needed. Please check the following repository: 
 
+[CNS Project Backend](https://github.com/fenix-hub/cns-project-backend).
+
+## Run the frontend project
 ```
 cd frontend
 npm install
 npm run start
 ```
 
-## Versions and compatibility
 
-[package](prova/package.json) file
+## Versions 
+
 
 ![diagram](ng_diagram.png)
