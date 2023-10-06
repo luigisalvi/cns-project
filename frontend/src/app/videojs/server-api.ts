@@ -57,7 +57,7 @@ export function session_post() {
 } //session_post
 
 
-  // (FOR DEV.) Server call for logging of streams'list. Could be used also to set the streamId value.
+  // Could be used also to set the streamId value.
   export function streams_get(): Promise<[{
     id: string,
     name: string,
@@ -93,15 +93,9 @@ export function play_call (streamId: string) {
 
     const url = server +`/streams/${streamId}/started`; //Server endpoint for play info
 
-    /* let play_data = {
-      streamId: streamId,
-      resolution:'1080'
-    } */
-
     fetch(url , {
       method: 'POST',
       credentials: 'include',
-      // body: JSON.stringify(play_data),
       headers: {'Content-type': 'application/json; charset=UTF-8'}
     } )
     // Error handling //
@@ -125,15 +119,9 @@ export function play_call (streamId: string) {
 
     const url = server +`/streams/${streamId}/stopped`; //Server endpoint for pause/stop info
 
-  /* let pause_data = {
-      streamId: streamId,
-      resolution:'1080'
-    } */
-
     fetch(url , {
       method: 'POST',
       credentials: 'include',
-      //body: JSON.stringify(pause_data),
       headers: {'Content-type': 'application/json; charset=UTF-8'}
     } )
 
@@ -226,6 +214,7 @@ export function metrics_post(streamId: string, trigger: string, timestamp: strin
 } //metrics_post
 
 
+// (FOR DEV. PURPOSES) 
 export function m3u8_get(streamId: string ) {
 
   const url = server +`/videos/${streamId}/master.m3u8`; //Server endpoint for streams' views
@@ -248,4 +237,5 @@ export function m3u8_get(streamId: string ) {
     console.error('Error:', error);
   });
 }
-  // Add other calls and endpoints //
+
+  //---------ADD HERE OTHER CALLS AND ENDPOINTS---------//
