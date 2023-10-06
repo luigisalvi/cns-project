@@ -6,25 +6,25 @@ const server = 'http://localhost:3000'
 // (FOR DEV.) Server call for logging of sessions'list.
 export function session_get() {
 
-  const url = server +'/sessions'; //Server endpoint for session checking/creation
+  const url = server + '/sessions'; //Server endpoint for session checking/creation
 
-  fetch(url , {
+  fetch(url, {
     method: 'GET',
     credentials: 'include',
     headers: {'Content-type': 'application/json; charset=UTF-8'}
-  } )
-  // Error handling //
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Error calling server');
-    }
-    return response.json();
   })
-  .then(data => {
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+    // Error handling //
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error calling server');
+      }
+      return response.json();
+    })
+    .then(data => {
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
 
 } //session_get
 
@@ -34,70 +34,70 @@ export function session_get() {
 // creates one new session and user.
 export function session_post() {
 
-  const url = server +'/sessions'; //Server endpoint for session checking/creation
+  const url = server + '/sessions'; //Server endpoint for session checking/creation
 
-  fetch(url , {
+  fetch(url, {
     method: 'POST',
     credentials: 'include',
     headers: {'Content-type': 'application/json; charset=UTF-8'}
-  } )
-  // Error handling //
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Error calling server');
-    }
-    return response.json();
   })
-  .then(data => {
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+    // Error handling //
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error calling server');
+      }
+      return response.json();
+    })
+    .then(data => {
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
 
 } //session_post
 
 
-  // Could be used also to set the streamId value.
-  export function streams_get(): Promise<[{
+// Could be used also to set the streamId value.
+export function streams_get(): Promise<[{
+  id: string,
+  name: string,
+  description: string,
+  ref: string,
+  resolutions: [string]
+}]> {
+
+  let r: [{
     id: string,
     name: string,
     description: string,
     ref: string,
     resolutions: [string]
-  }]> {
+  }] | undefined = undefined;
+  const url = server + '/streams'; //Server endpoint for session checking/creation
 
-    let r: [{
-      id: string,
-      name: string,
-      description: string,
-      ref: string,
-      resolutions: [string]
-    }] | undefined = undefined;
-    const url = server + '/streams'; //Server endpoint for session checking/creation
+  return fetch(url, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {'Content-type': 'application/json; charset=UTF-8'}
+  }).then(
+    response => {
+      return response.json();
+    }
+  )
 
-    return fetch(url , {
-      method: 'GET',
-      credentials: 'include',
-      headers: {'Content-type': 'application/json; charset=UTF-8'}
-    } ).then(
-      response => {
-        return response.json();
-      }
-    )
-
-  } //streams_get
+} //streams_get
 
 
 // Let the server know about a play event
-export function play_call (streamId: string) {
+export function play_call(streamId: string) {
 
-    const url = server +`/streams/${streamId}/started`; //Server endpoint for play info
+  const url = server + `/streams/${streamId}/started`; //Server endpoint for play info
 
-    fetch(url , {
-      method: 'POST',
-      credentials: 'include',
-      headers: {'Content-type': 'application/json; charset=UTF-8'}
-    } )
+  fetch(url, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {'Content-type': 'application/json; charset=UTF-8'}
+  })
     // Error handling //
     .then(response => {
       if (!response.ok) {
@@ -115,15 +115,15 @@ export function play_call (streamId: string) {
 
 
 // Let the server know about a pause/stop event
-  export function pause_call (streamId: string) {
+export function pause_call(streamId: string) {
 
-    const url = server +`/streams/${streamId}/stopped`; //Server endpoint for pause/stop info
+  const url = server + `/streams/${streamId}/stopped`; //Server endpoint for pause/stop info
 
-    fetch(url , {
-      method: 'POST',
-      credentials: 'include',
-      headers: {'Content-type': 'application/json; charset=UTF-8'}
-    } )
+  fetch(url, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {'Content-type': 'application/json; charset=UTF-8'}
+  })
 
     // Error handling //
     .then(response => {
@@ -138,45 +138,49 @@ export function play_call (streamId: string) {
       console.error('Error:', error);
     });
 
-  } //pause_event
+} //pause_event
 
 
 // Let the server know about the view event
-export function view_post(streamId: string , resolution: string) {
+export function view_post(streamId: string, resolution: string) {
 
-  const url = server +`/streams/${streamId}/views`; //Server endpoint for streams' views
+  const url = server + `/streams/${streamId}/views`; //Server endpoint for streams' views
 
   const data = {
     resolution: resolution,
   };
 
-  fetch(url , {
+  fetch(url, {
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify(data),
     headers: {'Content-type': 'application/json; charset=UTF-8'}
-  } )
-  // Error handling //
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Error calling server');
-    }
-    return response.json();
   })
-  .then(data => {
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+    // Error handling //
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error calling server');
+      }
+      return response.json();
+    })
+    .then(data => {
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
 
 } //view_post
 
 
 // Server call for posting stream metrics
 export function metrics_post(streamId: string, trigger: string, timestamp: string, screenSize: object,
-  currentMediaLevel: {resolution: string, bandwidth: number, level: number, media: string},
-  streamedTime: number,  downloadedBytes: number, bufferings:[{timestamp: string,videoTimestamp: number,duration: number}?],
-  downloadRate: number, bandwidth: number  ) {
+                             currentMediaLevel: { resolution: string, bandwidth: number, level: number, media: string },
+                             streamedTime: number, downloadedBytes: number, bufferings: [{
+    timestamp: string,
+    videoTimestamp: number,
+    duration: number
+  }?],
+                             downloadRate: number, bandwidth: number) {
 
   const url = server + `/streams/${streamId}/metrics`; //Server endpoint for streams'metrics
 
@@ -192,50 +196,50 @@ export function metrics_post(streamId: string, trigger: string, timestamp: strin
     bandwidth: bandwidth,
   };
 
-  fetch(url , {
+  fetch(url, {
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify(data),
     headers: {'Content-type': 'application/json; charset=UTF-8'}
-  } )
-  // Error handling //
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Error calling server');
-    }
-    return response.json();
   })
-  .then(data => {
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+    // Error handling //
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error calling server');
+      }
+      return response.json();
+    })
+    .then(data => {
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
 
 } //metrics_post
 
 
-// (FOR DEV. PURPOSES) 
-export function m3u8_get(streamId: string ) {
+// (FOR DEV. PURPOSES)
+export function m3u8_get(streamId: string) {
 
-  const url = server +`/videos/${streamId}/master.m3u8`; //Server endpoint for streams' views
+  const url = server + `/videos/${streamId}/master.m3u8`; //Server endpoint for streams' views
 
-  fetch(url , {
+  fetch(url, {
     method: 'GET',
     credentials: 'include',
     headers: {'Content-type': 'application/json; charset=UTF-8'}
-  } )
-  // Error handling //
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Error calling server');
-    }
-    return response.json();
   })
-  .then(data => {
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+    // Error handling //
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error calling server');
+      }
+      return response.json();
+    })
+    .then(data => {
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
 }
 
-  //---------ADD HERE OTHER CALLS AND ENDPOINTS---------//
+//---------ADD HERE OTHER CALLS AND ENDPOINTS---------//
