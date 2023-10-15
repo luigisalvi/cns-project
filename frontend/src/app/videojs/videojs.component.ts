@@ -43,11 +43,13 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     resolution: string,
     bandwidth: number,
     level: number,
-    media: string
+    media: string,
+    duration: number
   } | undefined = undefined;
   private bufferingTimes: [{ timestamp: string, videoTimestamp: number, duration: number }?] = [];
   private screenSize: { width: number, height: number } = {width: 0, height: 0};
   private streamId: string = '';
+  private MediaLevelInit: number =0;
 
   constructor(
   ) {
@@ -103,6 +105,7 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     //https://github.com/videojs/http-streaming#segment-metadata
     let tracks = this.player.textTracks();
     let segmentMetadataTrack: TextTrack | undefined = undefined;
+    let StopTime = this.player.currentTime();
 
     for (let i = 0; i < tracks.length; i++) {
       if (tracks[i].label === 'segment-metadata') {
@@ -128,7 +131,8 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
               resolution: acValue.resolution.width + "x" + acValue.resolution.height,
               bandwidth: acValue.bandwidth,
               level: Number(currPlaylist.split('_')[1].at(0)!),
-              media: currPlaylist
+              media: currPlaylist,
+              duration : StopTime - this.MediaLevelInit
             };
             this.sendMetrics('mediaChange');
           } // if (previousPlaylist !== acValue.playlist)
@@ -137,7 +141,8 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     }
-  }
+    this.MediaLevelInit = StopTime
+  } //detectMediaChange
 
   //Implement the view policy: if user watch a video for at least 10s,
   //the video is considered viewed and the video views'counter take it into account.

@@ -167,7 +167,7 @@ export function view_post(streamId: string, resolution: string) {
 
 // Server call for posting stream metrics
 export function metrics_post(streamId: string, trigger: string, timestamp: string, screenSize: object,
-                             currentMediaLevel: { resolution: string, bandwidth: number, level: number, media: string },
+                             currentMediaLevel: { resolution: string, bandwidth: number, level: number, media: string,duration: number },
                              streamedTime: number, downloadedBytes: number, bufferings: [{
     timestamp: string,
     videoTimestamp: number,
