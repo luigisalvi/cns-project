@@ -3,10 +3,9 @@
     /* flex-wrap: nowrap; */
     flex-direction: column;
     /* align-content: center; */
-    height: 83%;
     justify-content: space-between;
   }
-  
+
   .inner {
     /* centered vertically */
     /* flex-wrap: nowrap; */
@@ -18,11 +17,10 @@
     flex-direction: column;
     margin: 20px;
   }
-  
+
   /* Stile per il titolo */
   h1 {
     font-family: 'Impact', Charcoal, sans-serif;
     font-size: 48px; /* Imposta la dimensione del carattere a 48px */
     color: #445fe7;
   }
-  

@@ -8,7 +8,7 @@
 .video-js.vjs-4-3,
 video.video-js,
 video.vjs-tech {
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 250px);
   position: relative !important;
   width: 100%;
   height: auto !important;
@@ -36,9 +36,9 @@ video.vjs-tech {
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
+  gap: 3px;
 
   mat-icon {
     color: #c7c7c7;
-    font-size: 21px;
   }
 }

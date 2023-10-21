@@ -1,6 +1,8 @@
 // server-api.js
 
 //Import these function in the videojs.component.ts and use there.
+import {Stream} from "@API/server.interface";
+
 const server = 'http://localhost:3000'
 
 // (FOR DEV.) Server call for logging of sessions'list.
@@ -58,13 +60,7 @@ export function session_post() {
 
 
 // Could be used also to set the streamId value.
-export function streams_get(): Promise<[{
-  id: string,
-  name: string,
-  description: string,
-  ref: string,
-  resolutions: [string]
-}]> {
+export function streams_get(): Promise<[Stream]> {
 
   const url = server + '/streams'; //Server endpoint for session checking/creation
 
@@ -80,6 +76,21 @@ export function streams_get(): Promise<[{
 
 } //streams_get
 
+export function stream_get(id: string): Promise<Stream> {
+
+  const url = server + '/streams/' + id; //Server endpoint for session checking/creation
+
+  return fetch(url, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {'Content-type': 'application/json; charset=UTF-8'}
+  }).then(
+    response => {
+      return response.json();
+    }
+  )
+
+} //streams_get
 
 // Let the server know about a play event
 export function play_call(streamId: string) {

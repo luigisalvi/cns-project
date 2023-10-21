@@ -1,8 +1,10 @@
 // videojs.ts component
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import videojs, {VideoJsPlayerOptions} from 'video.js';
-import {metrics_post, session_post, streams_get, view_post} from './server-api';
+import {metrics_post, session_post, stream_get, streams_get, view_post} from '@API/server-api';
 import TextTrackCue = videojs.TextTrackCueList.TextTrackCue;
+import {ActivatedRoute} from "@angular/router";
+import {Stream} from "@API/server.interface";
 
 
 @Component({
@@ -52,6 +54,7 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   private MediaLevelInit: number =0;
 
   constructor(
+    private route: ActivatedRoute
   ) {
   }
 
@@ -230,9 +233,7 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   // COMPONENT'S LIFCYCLE HOOKS //
 
   async ngOnInit() {
-
-    // Server call for session set up
-    session_post();
+    this.streamId = this.route.snapshot.paramMap.get('id')!
 
     //video.js init
     this.player = videojs(this.target.nativeElement,
@@ -248,8 +249,7 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     // (at 0-index) is chosen. Whenever the playlist is populated by
     // different videos, a user input-reader is needed, in order to collect
     // the input chosen by the user and set the appropriate index in the following line.
-    let stream = (await streams_get()).at(0);
-    this.streamId = stream?.id!
+    let stream: Stream = (await stream_get(this.streamId));
 
     // Change VideoJS source
     this.changeVideoSource(stream?.ref!);

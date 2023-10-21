@@ -12,6 +12,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NumberCardViewComponent } from './number-card-view/number-card-view.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { StreamingComponent } from './streaming/streaming.component';
+import { StreamListComponent } from './stream-list/stream-list.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { StreamingComponent } from './streaming/streaming.component';
     NumberCardViewComponent,
     DashboardComponent,
     StreamingComponent,
+    StreamListComponent,
   ],
     imports: [
         BrowserModule,
