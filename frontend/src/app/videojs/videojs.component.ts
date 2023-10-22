@@ -3,7 +3,7 @@ import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, View
 import videojs, {VideoJsPlayerOptions} from 'video.js';
 import {metrics_post, session_post, stream_get, streams_get, view_post} from '@API/server-api';
 import TextTrackCue = videojs.TextTrackCueList.TextTrackCue;
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Stream} from "@API/server.interface";
 
 
@@ -21,6 +21,8 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     controls: true,
     fluid: true,
     enableSourceset: true,
+    liveui: true,
+    autoplay: true,
     html5: {
       vhs: {
         //https://github.com/videojs/http-streaming#overridenative
@@ -51,10 +53,12 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   private bufferingTimes: [{ timestamp: string, videoTimestamp: number, duration: number }?] = [];
   private screenSize: { width: number, height: number } = {width: 0, height: 0};
   private streamId: string = '';
-  private MediaLevelInit: number =0;
+  private MediaLevelInit: number = 0;
+  private currentTime: number = 0;
 
   constructor(
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
   }
 
@@ -108,7 +112,6 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     //https://github.com/videojs/http-streaming#segment-metadata
     let tracks = this.player.textTracks();
     let segmentMetadataTrack: TextTrack | undefined = undefined;
-    let StopTime = this.player.currentTime();
 
     for (let i = 0; i < tracks.length; i++) {
       if (tracks[i].label === 'segment-metadata') {
@@ -135,7 +138,7 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
               bandwidth: acValue.bandwidth,
               level: Number(currPlaylist.split('_')[1].at(0)!),
               media: currPlaylist,
-              duration : StopTime - this.MediaLevelInit
+              duration: this.updateLevelDuration()
             };
             this.sendMetrics('mediaChange');
           } // if (previousPlaylist !== acValue.playlist)
@@ -144,14 +147,22 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     }
-    this.MediaLevelInit = StopTime
   } //detectMediaChange
+
+  updateLevelDuration(): number {
+    console.log(this.MediaLevelInit)
+    let duration: number = 0;
+    let StopTime: number = this.currentTime;
+    duration = StopTime - this.MediaLevelInit;
+    this.MediaLevelInit = StopTime;
+    return duration;
+  }
 
   //Implement the view policy: if user watch a video for at least 10s,
   //the video is considered viewed and the video views'counter take it into account.
   view_event = () => {
-    let currentTime = this.player.currentTime();
-    if (currentTime > 10 && !this.videoWatched) {
+    this.currentTime = this.currentTime + 0.250;
+    if (this.currentTime > 10 && !this.videoWatched) {
       this.videoWatched = true;
       console.log('Video Watched');
 
@@ -174,7 +185,11 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   sendMetrics(trigger: string, debug: boolean = true) {
     //Inner variables
     let timestamp = new Date().toISOString();
-    let streamedTime = this.player.currentTime();
+    let streamedTime = this.currentTime;
+
+    if (trigger !== 'ended') {
+      this.currentMediaLevel!.duration = this.updateLevelDuration();
+    }
 
     //Server call
     metrics_post(this.streamId, trigger, timestamp, this.screenSize, this.currentMediaLevel!,
@@ -304,10 +319,14 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.player) {
       this.sendMetrics('destroy');
       this.player.dispose();
-      //this.player.off('timeupdate', this.view_event);
-      //this.player.off('play', this.play_event);
-      //this.player.off('pause', this.pause_event);
+      this.player.off('timeupdate', this.view_event);
+      this.player.off('play');
+      this.player.off('pause');
       console.log('player disposed')
     }
+  }
+
+  selectDashboard() {
+    this.router.navigate(['dashboard', this.streamId]);
   }
 }

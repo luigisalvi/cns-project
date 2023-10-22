@@ -1,6 +1,8 @@
 // docs at: https://swimlane.gitbook.io/ngx-charts/examples/bar-charts/vertical-bar-chart (see also demo in readme.md)
-import { Component, OnInit } from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import { MetricsService } from '../metrics.service';
+import {View} from "@API/server.interface";
+import {stream_analytics_get} from "@API/server-api";
 //import { Color, ScaleType } from '@swimlane/ngx-charts';
 
 
@@ -23,7 +25,7 @@ export class BarViewComponent implements OnInit {
   xAxisLabel = 'Days';
   showYAxisLabel = true;
   yAxisLabel = 'Views';
-  
+
   //See: https://swimlane.github.io/ngx-charts/#/ngx-charts/bar-horizontal
   colorScheme ='vivid';
 
@@ -38,11 +40,12 @@ export class BarViewComponent implements OnInit {
 
   constructor(private metricsService: MetricsService) {}
 
-  ngOnInit(): void {
-    const allData = this.metricsService.getData();
-    allData.forEach(videoData => {
+  ngOnInit() {
+    // View List Data
+    this.metricsService.streamAnalytics$.subscribe(streamAnalytics => {
+      console.log(streamAnalytics)
       const dailyViewsMap = new Map<string, number>();
-      videoData.viewList.forEach(view => {
+      streamAnalytics.viewList.forEach(view => {
         const date = new Date(view.timestamp).toISOString().split('T')[0];
         const count = (dailyViewsMap.get(date) ?? 0) + 1;
         dailyViewsMap.set(date, count);
@@ -53,6 +56,10 @@ export class BarViewComponent implements OnInit {
           value: count
         });
       });
-    });
+      this.data = [...this.data]
+
+    })
+
   }
+
 }

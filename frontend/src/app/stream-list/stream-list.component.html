@@ -1,0 +1,13 @@
+<div class="stream-list">
+  <h2>List of Streams</h2>
+  <ul>
+    <li *ngFor="let stream of streams$ | async">
+      <button mat-flat-button (click)="selectStream(stream)" class="live-button">
+        <div class="live-button-content">
+          <span *ngIf="stream.isLive" class="circle"></span>
+          <span>{{stream.name}}</span>
+        </div>
+      </button>
+    </li>
+  </ul>
+</div>

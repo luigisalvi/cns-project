@@ -5,11 +5,9 @@ import {StreamingComponent} from './streaming/streaming.component';
 import {StreamListComponent} from "./stream-list/stream-list.component";
 
 const routes: Routes = [
-  {
-    path: 'streaming', component: StreamListComponent,
-  },
+  {path: '', component: StreamListComponent},
   {path: 'streaming/:id', component: StreamingComponent, pathMatch: 'full'},
-  {path: 'dashboard', component: DashboardComponent}
+  {path: 'dashboard/:id', component: DashboardComponent}
 ];
 
 @NgModule({

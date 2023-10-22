@@ -1,7 +1,7 @@
 // server-api.js
 
 //Import these function in the videojs.component.ts and use there.
-import {Stream} from "@API/server.interface";
+import {SessionAnalytics, Stream, StreamAnalytics} from "@API/server.interface";
 
 const server = 'http://localhost:3000'
 
@@ -175,6 +175,42 @@ export function view_post(streamId: string, resolution: string) {
 
 } //view_post
 
+export function stream_analytics_get(id: string): Promise<void | StreamAnalytics> {
+  const url = server + `/analytics/streams?id=${id}`; //Server endpoint for streams' views
+
+  return fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {'Content-type': 'application/json; charset=UTF-8'}
+    })
+     .then(response => {
+        if (!response.ok) {
+          throw new Error('Error calling server');
+        }
+        return response.json() as Promise<StreamAnalytics>;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+export function session_analytics_get(id?: string): Promise<void | SessionAnalytics[]> {
+  const url = server + (id ? `/analytics/sessions?id=${id}` : `/analytics/sessions`); //Server endpoint for session checking/creation
+  return fetch(url, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {'Content-type': 'application/json; charset=UTF-8'}
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error calling server');
+      }
+      return response.json() as Promise<SessionAnalytics[]>;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
 
 // Server call for posting stream metrics
 export function metrics_post(streamId: string, trigger: string, timestamp: string, screenSize: object,

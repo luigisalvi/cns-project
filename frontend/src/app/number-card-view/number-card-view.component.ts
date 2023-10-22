@@ -7,20 +7,17 @@ import { MetricsService } from '../metrics.service';
   templateUrl: './number-card-view.component.html',
   styleUrls: ['./number-card-view.component.scss']
 })
-export class NumberCardViewComponent {
-  data: any[] |undefined;
+export class NumberCardViewComponent implements OnInit {
   single: any[]=[];
   constructor(private metricsService: MetricsService) {}
-  //totalStreamedBytes: number=0;
-  //totalStreamedTime: number=0;
 
   colorScheme ='vivid';
   cardColor: string = '#232837';
 
   ngOnInit(): void {
-    this.data = this.metricsService.getData().map(videoData => {
-      const totalStreamedBytes = (videoData.totalStreamedBytes/1e6).toFixed(2);
-      const totalStreamedTime = (videoData.totalStreamedTime/60).toFixed(2);
+    this.metricsService.streamAnalytics$.subscribe(streamAnalytics => {
+      const totalStreamedBytes = (streamAnalytics.totalStreamedBytes/1e6).toFixed(2);
+      const totalStreamedTime = (streamAnalytics.totalStreamedTime/60).toFixed(2);
 
       this.single = [
         {
@@ -33,10 +30,10 @@ export class NumberCardViewComponent {
         }
 
       ]
-      
+
     });
 
-    
+
   }
 
 }

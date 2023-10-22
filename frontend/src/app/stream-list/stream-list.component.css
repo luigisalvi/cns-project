@@ -1,0 +1,19 @@
+.stream-list {
+  margin: 50px;
+}
+
+.circle {
+  background: red;
+  width: 8px;
+  height: 8px;
+  display: block;
+  border-radius: 10px;
+}
+
+.live-button-content {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
