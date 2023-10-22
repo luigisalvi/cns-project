@@ -14,10 +14,18 @@ export class NumberCardViewComponent implements OnInit {
   colorScheme ='vivid';
   cardColor: string = '#232837';
 
+  secondsToHHMMSS(totalSeconds: number) {
+    let hours = Math.floor(totalSeconds / 3600);
+    let minutes = Math.floor((totalSeconds - (hours * 3600)) / 60);
+    let seconds = Math.floor(totalSeconds - (hours * 3600) - (minutes * 60));
+
+    return hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+  }
+
   ngOnInit(): void {
     this.metricsService.streamAnalytics$.subscribe(streamAnalytics => {
       const totalStreamedBytes = (streamAnalytics.totalStreamedBytes/1e6).toFixed(2);
-      const totalStreamedTime = (streamAnalytics.totalStreamedTime/60).toFixed(2);
+      const totalStreamedTime: string = this.secondsToHHMMSS(streamAnalytics.totalStreamedTime);
 
       this.single = [
         {
@@ -26,7 +34,7 @@ export class NumberCardViewComponent implements OnInit {
         },
         {
           name: 'Total Streamed Time',
-          value: totalStreamedTime + ' min'
+          value: totalStreamedTime
         }
 
       ]

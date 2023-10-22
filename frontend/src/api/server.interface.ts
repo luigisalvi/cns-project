@@ -21,16 +21,25 @@ export interface StreamAnalytics {
 }
 
 export interface MediaLevel {
-  _id: number,
-  duration: number,
+  _id?: number,
+  resolution: string,
+  bandwidth: number,
+  level: number,
+  media: string,
+  totalStreamedTime?: number,
+  '%totalStreamedTime'?: number
 }
 
 export interface SessionAnalytics {
   streamId: string,
   totalStreamedBytes: number,
   totalStreamedTime: number,
-  rebufferingEvents: number,
-  rebufferingTime: number,
+  bufferingEvents: number,
+  bufferingTime: number,
   levels: MediaLevel[],
   screenSizes: string[]
+}
+
+export interface Session {
+  sessionId: string,
 }

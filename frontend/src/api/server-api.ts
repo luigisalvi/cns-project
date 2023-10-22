@@ -1,7 +1,7 @@
 // server-api.js
 
 //Import these function in the videojs.component.ts and use there.
-import {SessionAnalytics, Stream, StreamAnalytics} from "@API/server.interface";
+import {MediaLevel, Session, SessionAnalytics, Stream, StreamAnalytics} from "@API/server.interface";
 
 const server = 'http://localhost:3000'
 
@@ -34,11 +34,11 @@ export function session_get() {
 // Allow the server to check if the current user already exists
 // in the database with its personal session of view. If not, it
 // creates one new session and user.
-export function session_post() {
+export function session_post(): Promise<Session> {
 
   const url = server + '/sessions'; //Server endpoint for session checking/creation
 
-  fetch(url, {
+  return fetch(url, {
     method: 'POST',
     credentials: 'include',
     headers: {'Content-type': 'application/json; charset=UTF-8'}
@@ -49,11 +49,6 @@ export function session_post() {
         throw new Error('Error calling server');
       }
       return response.json();
-    })
-    .then(data => {
-    })
-    .catch(error => {
-      console.error('Error:', error);
     });
 
 } //session_post
@@ -214,7 +209,7 @@ export function session_analytics_get(id?: string): Promise<void | SessionAnalyt
 
 // Server call for posting stream metrics
 export function metrics_post(streamId: string, trigger: string, timestamp: string, screenSize: object,
-                             currentMediaLevel: { resolution: string, bandwidth: number, level: number, media: string,duration: number },
+                             currentMediaLevel: MediaLevel,
                              streamedTime: number, downloadedBytes: number, bufferings: [{
     timestamp: string,
     videoTimestamp: number,

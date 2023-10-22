@@ -1,11 +1,15 @@
 // videojs.ts component
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import videojs, {VideoJsPlayerOptions} from 'video.js';
-import {metrics_post, session_post, stream_get, streams_get, view_post} from '@API/server-api';
-import TextTrackCue = videojs.TextTrackCueList.TextTrackCue;
+import {metrics_post, session_post, stream_get, view_post} from '@API/server-api';
 import {ActivatedRoute, Router} from "@angular/router";
-import {Stream} from "@API/server.interface";
+import {MediaLevel, Stream} from "@API/server.interface";
+import {interval, Subscription} from "rxjs";
+import TextTrackCue = videojs.TextTrackCueList.TextTrackCue;
 
+declare var require: any;
+require('videojs-contrib-quality-levels');
+require('@mycujoo/videojs-hls-quality-selector');
 
 @Component({
   selector: 'app-videojs',
@@ -22,11 +26,18 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     fluid: true,
     enableSourceset: true,
     liveui: true,
-    autoplay: true,
+    autoplay: false,
+    controlBar: {
+      'pictureInPictureToggle': false,
+      'liveDisplay': true,
+    },
+    plugins: { hlsQualitySelector: { displayCurrentQuality: true } },
     html5: {
       vhs: {
         //https://github.com/videojs/http-streaming#overridenative
-        overrideNative: true
+        overrideNative: true,
+        limitRenditionByPlayerDimensions: false,
+        smoothQualityChange: true,
       },
       nativeAudioTracks: false,
       nativeVideoTracks: false
@@ -43,18 +54,15 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   private downloadedBytes: number = 0;
   private downloadRate: number = 0;
   private bandwidth: number = 0;
-  private currentMediaLevel: {
-    resolution: string,
-    bandwidth: number,
-    level: number,
-    media: string,
-    duration: number
-  } | undefined = undefined;
+  private currentMediaLevel: MediaLevel | undefined = undefined;
   private bufferingTimes: [{ timestamp: string, videoTimestamp: number, duration: number }?] = [];
   private screenSize: { width: number, height: number } = {width: 0, height: 0};
   private streamId: string = '';
-  private MediaLevelInit: number = 0;
-  private currentTime: number = 0;
+
+  private videoStartedAt: number = 0;
+  private totalSecondsWatched = 0;
+
+  timer$: Subscription = new Subscription();
 
   constructor(
     private route: ActivatedRoute,
@@ -105,9 +113,12 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   } //user_metrics
 
+
   //This function is uset to track each quality streaming level change:
   //when an ffmpeg chunk from a different quality is played while streaming,
   //this function detect it and informs the server.
+
+  previousPlaylist: string | undefined = undefined;
   detectMediaChange() {
     //https://github.com/videojs/http-streaming#segment-metadata
     let tracks = this.player.textTracks();
@@ -119,52 +130,34 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
 
-    let previousPlaylist: string | undefined = undefined;
+    let activeCue: TextTrackCue | undefined = segmentMetadataTrack?.activeCues?.[0] as (TextTrackCue | undefined);
 
-    if (segmentMetadataTrack) {
-      segmentMetadataTrack.oncuechange = () => {
-        let activeCue: TextTrackCue | undefined = segmentMetadataTrack?.activeCues?.[0] as (TextTrackCue | undefined);
+    if (activeCue) {
+      // @ts-ignore
+      const acValue = activeCue.value;
 
-        if (activeCue) {
-          // @ts-ignore
-          const acValue = activeCue.value;
+      if (this.previousPlaylist !== acValue.playlist) {
 
-          if (previousPlaylist !== acValue.playlist) {
+        let currPlaylist: string = acValue.playlist;
 
-            let currPlaylist: string = acValue.playlist;
+        this.currentMediaLevel = {
+          resolution: acValue.resolution.width + "x" + acValue.resolution.height,
+          bandwidth: acValue.bandwidth,
+          level: Number(currPlaylist.split('_')[1].at(0)!),
+          media: currPlaylist
+        };
+        this.sendMetrics('mediaChange');
+      } // if (previousPlaylist !== acValue.playlist)
 
-            this.currentMediaLevel = {
-              resolution: acValue.resolution.width + "x" + acValue.resolution.height,
-              bandwidth: acValue.bandwidth,
-              level: Number(currPlaylist.split('_')[1].at(0)!),
-              media: currPlaylist,
-              duration: this.updateLevelDuration()
-            };
-            this.sendMetrics('mediaChange');
-          } // if (previousPlaylist !== acValue.playlist)
-
-          previousPlaylist = acValue.playlist;
-        }
-      }
+      this.previousPlaylist = acValue.playlist;
     }
   } //detectMediaChange
-
-  updateLevelDuration(): number {
-    console.log(this.MediaLevelInit)
-    let duration: number = 0;
-    let StopTime: number = this.currentTime;
-    duration = StopTime - this.MediaLevelInit;
-    this.MediaLevelInit = StopTime;
-    return duration;
-  }
 
   //Implement the view policy: if user watch a video for at least 10s,
   //the video is considered viewed and the video views'counter take it into account.
   view_event = () => {
-    this.currentTime = this.currentTime + 0.250;
-    if (this.currentTime > 10 && !this.videoWatched) {
+    if (this.totalSecondsWatched > 10 && !this.videoWatched) {
       this.videoWatched = true;
-      console.log('Video Watched');
 
       //Server call for view event tracker
       view_post(this.streamId, this.currentMediaLevel?.resolution!);
@@ -184,16 +177,14 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   sendMetrics(trigger: string, debug: boolean = true) {
     //Inner variables
-    let timestamp = new Date().toISOString();
-    let streamedTime = this.currentTime;
-
-    if (trigger !== 'ended') {
-      this.currentMediaLevel!.duration = this.updateLevelDuration();
-    }
+    let timestamp = new Date();
+    let streamedTime = (timestamp.getTime() - this.videoStartedAt) / 1000;
 
     //Server call
-    metrics_post(this.streamId, trigger, timestamp, this.screenSize, this.currentMediaLevel!,
+    metrics_post(this.streamId, trigger, timestamp.toISOString(), this.screenSize, this.currentMediaLevel!,
       streamedTime, this.downloadedBytes, this.bufferingTimes, this.downloadRate, this.bandwidth);
+
+    this.videoStartedAt = timestamp.getTime();
 
     if (debug) {
       // Send metrics to server
@@ -201,7 +192,7 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
       // Add the session id --> USER (from cookie)
       // Add the video id --> STREAM (from cookie)
       console.log('Trigger', trigger);
-      console.log('Timestamp (iso)', timestamp);
+      console.log('Timestamp (iso)', timestamp.toISOString());
       console.log('Screen Size', this.screenSize);
       console.log('Current Media Level', this.currentMediaLevel);
       console.log('Streamed Time (in seconds)', streamedTime);
@@ -211,29 +202,24 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
       console.log('Bandwidth', this.bandwidth);
       console.log('===== END METRICS ======');
     }
+
+    this.downloadedBytes = 0;
+    this.bufferingTimes = [];
   }
+
 
   changeVideoSource(url: string, type: string = 'application/x-mpegURL'): void {
-    this.player.src(
-      {
-        src: url,
-        type: type
-      }
-    );
+    this.player.src({ src: url, type: type });
   }
 
-  trackLiveUser(streamId: string) {
+  trackLiveUser(streamId: string, sessionId: string) {
     // Track live users using WekSocket connection //
-    const ws = new WebSocket('ws://localhost:3001/live-users?streamId=' + streamId);
+    const ws = new WebSocket(`ws://localhost:3001/live-users?streamId=${streamId}&clientId=${sessionId}`);
 
     ws.onopen = () => {
-      console.log('Connected to server');
-
-      ws.send('Hello, server!');
     };
 
     ws.onmessage = (message: any) => {
-      console.log(`Received message from server: ${message.data}`);
       let jsonMessage = JSON.parse(message.data);
       if (jsonMessage.hasOwnProperty('liveUsersCount')) {
         this.liveCounter = jsonMessage.liveUsersCount;
@@ -241,21 +227,32 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ws.onclose = () => {
-      console.log('Disconnected from server');
     }
   }
 
   // COMPONENT'S LIFCYCLE HOOKS //
 
-  async ngOnInit() {
+  sessionId: string = '';
+
+  ngOnInit() {
+    session_post().then(
+      session => {
+        this.sessionId = session.sessionId
+      }
+    );
+
     this.streamId = this.route.snapshot.paramMap.get('id')!
 
     //video.js init
-    this.player = videojs(this.target.nativeElement,
-      this.options, function onPlayerReady() {
-        console.log('onPlayerReady', this);
-      }
-    );
+    if (!this.player) {
+      this.player = videojs(this.target.nativeElement, this.options, function onPlayerReady() {
+        // @ts-ignore
+        this.hlsQualitySelector({ displayCurrentQuality: true })
+        // @ts-ignore
+        this.controlBar.addChild("qualitySelector")
+      });
+
+    }
 
     this.getScreenSize();
 
@@ -264,51 +261,52 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     // (at 0-index) is chosen. Whenever the playlist is populated by
     // different videos, a user input-reader is needed, in order to collect
     // the input chosen by the user and set the appropriate index in the following line.
-    let stream: Stream = (await stream_get(this.streamId));
+    stream_get(this.streamId).then(stream => {
 
-    // Change VideoJS source
-    this.changeVideoSource(stream?.ref!);
+      // Change VideoJS source
+      this.changeVideoSource(stream?.ref!);
 
-    // Track live users
-    this.trackLiveUser(this.streamId);
+      // Track live users
+      this.trackLiveUser(this.streamId, this.sessionId);
+    });
+
   }
-
 
   ngAfterViewInit(): void {
     // Event Listeners
     this.player.on('play', () => {
-      //Track play event (if needed)
-      //play_call(streamId);
+      // @ts-ignore
+      this.videoStartedAt = new Date().getTime();
+      this.timer$ = interval(3000).subscribe(() => this.sendMetrics('timeupdate'))
+      this.detectMediaChange();
+      this.sendMetrics('play');
     })
 
     this.player.on('pause', () => {
+      this.timer$.unsubscribe();
       this.sendMetrics('pause');
-      //Track pause/stop event (if needed)
-      //pause_call(streamId);
     });
 
     //This event listener implements the views video policy
     //in case of video source change and collects metrics on each new set.
     //https://docs.videojs.com/player#event:sourceset:~:text=line%201831-,sourceset,-%23
-    this.player.on('sourceset', () => {
+    this.player.on('timeupdate', () => {
+      this.totalSecondsWatched += 0.250;
+      this.view_event();
       this.detectMediaChange();
-      this.videoWatched = false;
-      this.player.on('timeupdate', this.view_event);
     })
-
-    //This function evaulate each buffering event occurred while
-    //playing a video and generate a set of buffers'metrics sent to the server-side.
-    this.rebuffering();
 
     //This event listener implements the views video policy
     //in case of ended video and collects metrics.
     //https://docs.videojs.com/player#event:ended:~:text=line%20110-,ended,-%23
     this.player.on('ended', () => {
-      this.detectMediaChange();
-      this.sendMetrics('ended'); //no needed: included in detectMediaChange. Choose one of them(?)
       this.videoWatched = false;
-      this.player.on('timeupdate', this.view_event);
+      this.sendMetrics('ended');
     })
+
+    //This function evaulate each buffering event occurred while
+    //playing a video and generate a set of buffers'metrics sent to the server-side.
+    this.rebuffering();
 
     //---------------ADD HERE OTHER LISTENERS AND FUNCTIONS------------//
 
@@ -317,12 +315,11 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     // destroy player
     if (this.player) {
-      this.sendMetrics('destroy');
-      this.player.dispose();
-      this.player.off('timeupdate', this.view_event);
+      this.player.off('timeupdate');
       this.player.off('play');
       this.player.off('pause');
-      console.log('player disposed')
+      this.player.off('ended');
+      this.player.dispose();
     }
   }
 
