@@ -11,7 +11,7 @@ import {MetricsService} from "../metrics.service";
 })
 export class SessionDashboardComponent implements OnInit {
 
-  sessionId: string = "";
+  streamId: string | undefined;
   sessionAnalytics: void | SessionAnalytics[] = undefined;
 
   constructor(
@@ -22,11 +22,11 @@ export class SessionDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     //Get from the path the video sessionId to send a server request
-    this.sessionId = this.activatedRoute.snapshot.paramMap.get('id')!;
+    this.streamId = this.activatedRoute.snapshot.paramMap.get('id')!;
     
     //GET req. to the http server. It consists of a MongoDB query to 
     //retrive desired data about a single session.
-    session_analytics_get(this.sessionId).then(
+    session_analytics_get(this.streamId).then(
       (data) => {
         this.sessionAnalytics = data;
         console.log(this.sessionAnalytics)

@@ -1,5 +1,5 @@
 //docs at:https://swimlane.gitbook.io/ngx-charts/examples/number-card-chart
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MetricsService } from '../metrics.service';
 
 @Component({
@@ -10,6 +10,13 @@ import { MetricsService } from '../metrics.service';
 export class SessionNumberCardViewComponent {
 
   single: any[]=[];
+  @Input() streamId: string | undefined;
+
+  totalStreamedTime: string = " ";
+  totalStreamedBytes: string =  " ";
+  totalBufferingEvents: number = 0;
+  totalBufferingTime: string = " ";
+
   constructor(private metricsService: MetricsService) {}
 
   colorScheme ='vivid';
@@ -26,34 +33,75 @@ export class SessionNumberCardViewComponent {
 
   ngOnInit(): void {
     this.metricsService.sessionAnalytics$.subscribe(sessionAnalytics => {
-      const totalStreamedBytes = (sessionAnalytics[0].totalStreamedBytes/1e6).toFixed(2);
-      const totalStreamedTime: string = this.secondsToHHMMSS(sessionAnalytics[0].totalStreamedTime);
-      const totalBufferingEvents: number = sessionAnalytics[0].bufferingEvents;
-      const totalBufferingTime: string = this.secondsToHHMMSS(sessionAnalytics[0].bufferingTime);
+      
+      const streamId = this.streamId;
+      const targetRecord = sessionAnalytics.find(item => item.streamId == streamId);
 
-      this.single = [
-        {
-          name: 'Total Streamed Data',
-          value: totalStreamedBytes + ' MB'
-        },
-        {
-          name: 'Total Streamed Time',
-          value: totalStreamedTime
-        },
-        {
-          name: 'Total Buffering Events',
-          value: totalBufferingEvents
-        },
-        {
-          name: 'Total Buffering Time',
-          value: totalBufferingTime
-        }  
+      if(targetRecord){
+        this.totalStreamedBytes = (targetRecord.totalStreamedBytes/1e6).toFixed(2);
+        this.totalStreamedTime =  this.secondsToHHMMSS(targetRecord.totalStreamedTime);
+        this.totalBufferingEvents = targetRecord.bufferingEvents;
+        this.totalBufferingTime = this.secondsToHHMMSS(targetRecord.bufferingTime);
 
+        this.single = [
+          {
+            name: 'Total Streamed Data',
+            value: this.totalStreamedBytes + ' MB'
+          },
+          {
+            name: 'Total Streamed Time',
+            value: this.totalStreamedTime
+          },
+          {
+            name: 'Total Buffering Events',
+            value: this.totalBufferingEvents
+          },
+          {
+            name: 'Total Buffering Time',
+            value: this.totalBufferingTime
+          }  
+  
+  
+        ]
 
-      ],
+      } //if
+      
+      else {
+
+        if(sessionAnalytics && sessionAnalytics.length>0) {
+          for (const metrics of sessionAnalytics) {
+            this.totalStreamedBytes += metrics.totalStreamedBytes;
+            this.totalStreamedTime += metrics.totalStreamedTime;
+            this.totalBufferingEvents += metrics.bufferingEvents;
+            this.totalBufferingTime += metrics.bufferingTime;
+          }
+        } 
+
+        this.single = [
+          {
+            name: 'Total Streamed Data per Session',
+            value: this.totalStreamedBytes + ' MB'
+          },
+          {
+            name: 'Total Streamed Time per Session',
+            value: this.totalStreamedTime
+          },
+          {
+            name: 'Total Buffering Events per Session',
+            value: this.totalBufferingEvents
+          },
+          {
+            name: 'Total Buffering Time per Session',
+            value: this.totalBufferingTime
+          } 
+        ]
+
+      } //else
+
+     
       
       // NECESSARIO ? ? Se si aggiungere anche all'altro component
-      this.single = [...this.single];
+      //this.single = [...this.single];
 
     });
 
