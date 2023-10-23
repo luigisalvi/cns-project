@@ -1,4 +1,5 @@
-
+//Here there is a list of interfaces which defines the expexted structure
+//for each structured variables used in the whole project.
 export interface Stream {
   id: string,
   name: string,

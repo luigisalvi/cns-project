@@ -204,6 +204,7 @@ export function session_analytics_get(id?: string): Promise<void | SessionAnalyt
     })
     .catch(error => {
       console.error('Error:', error);
+      //return undefined;
     });
 }
 

@@ -18,9 +18,10 @@ export class StreamListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Server call for session set up
+    //Server call for session set up
     session_post();
-
+    
+    //Get the list of available streams and show it through a clickable menu
     this.streams$ = streams_get()
   }
 

@@ -10,9 +10,10 @@ import {MatIconModule} from '@angular/material/icon';
 import { BarViewComponent } from './bar-view-chart/bar-view-chart.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NumberCardViewComponent } from './number-card-view/number-card-view.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { StreamDashboardComponent } from './dashboard/dashboard.component';
 import { StreamingComponent } from './streaming/streaming.component';
 import { StreamListComponent } from './stream-list/stream-list.component';
+import { SessionDashboardComponent } from './session-dashboard/session-dashboard.component';
 
 @NgModule({
   declarations: [
@@ -20,9 +21,10 @@ import { StreamListComponent } from './stream-list/stream-list.component';
     VjsPlayerComponent,
     BarViewComponent,
     NumberCardViewComponent,
-    DashboardComponent,
+    StreamDashboardComponent,
     StreamingComponent,
     StreamListComponent,
+    SessionDashboardComponent,
   ],
     imports: [
         BrowserModule,

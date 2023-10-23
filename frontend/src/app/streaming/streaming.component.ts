@@ -1,3 +1,6 @@
+//This component aims to be the parent component of stream-list.component.ts.
+//It is used to make possible the routing towords a dedicated path.
+
 import { Component } from '@angular/core';
 
 @Component({

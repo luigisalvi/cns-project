@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {SessionAnalytics, StreamAnalytics, View} from "@API/server.interface";
-import {Observable, Subject} from "rxjs";
+import {Subject} from "rxjs";
 
 @Injectable({
   providedIn: 'root'

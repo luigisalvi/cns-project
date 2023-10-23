@@ -41,7 +41,7 @@ export class BarViewComponent implements OnInit {
   constructor(private metricsService: MetricsService) {}
 
   ngOnInit() {
-    // View List Data
+    // ViewList Data
     this.metricsService.streamAnalytics$.subscribe(streamAnalytics => {
       console.log(streamAnalytics)
       const dailyViewsMap = new Map<string, number>();
@@ -56,6 +56,7 @@ export class BarViewComponent implements OnInit {
           value: count
         });
       });
+      //Refresh data vector whenever new data comes 
       this.data = [...this.data]
 
     })
