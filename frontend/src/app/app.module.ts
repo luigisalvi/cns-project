@@ -14,6 +14,7 @@ import { StreamDashboardComponent } from './dashboard/dashboard.component';
 import { StreamingComponent } from './streaming/streaming.component';
 import { StreamListComponent } from './stream-list/stream-list.component';
 import { SessionDashboardComponent } from './session-dashboard/session-dashboard.component';
+import { SessionNumberCardViewComponent } from './session-number-card-view/session-number-card-view.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { SessionDashboardComponent } from './session-dashboard/session-dashboard
     StreamingComponent,
     StreamListComponent,
     SessionDashboardComponent,
+    SessionNumberCardViewComponent,
   ],
     imports: [
         BrowserModule,

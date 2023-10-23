@@ -14,6 +14,7 @@ export class NumberCardViewComponent implements OnInit {
   colorScheme ='vivid';
   cardColor: string = '#232837';
 
+  //This function converts seconds in the time format 'HH:MM:SS'
   secondsToHHMMSS(totalSeconds: number) {
     let hours = Math.floor(totalSeconds / 3600);
     let minutes = Math.floor((totalSeconds - (hours * 3600)) / 60);
