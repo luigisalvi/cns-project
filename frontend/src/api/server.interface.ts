@@ -39,9 +39,7 @@ export interface SessionAnalytics {
   bufferingTime: number,
   levels: MediaLevel[],
   screenSizes: string[]
-  //NON DOVREMMO INCLUDERE?
-  //bandwidth: number
-  //downloadRate: number
+
 }
 
 export interface Session {
