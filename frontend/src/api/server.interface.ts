@@ -31,15 +31,26 @@ export interface MediaLevel {
   '%totalStreamedTime'?: number
 }
 
+export interface ScreenSize {
+  _id?: number,
+  size: {width: number, height: number},
+  totalStreamedTime?: number,
+  '%totalStreamedTime'?: number
+}
+
 export interface SessionAnalytics {
-  streamId: string,
+  _id: string,
+  sessionId: string,
+  clientIp: string,
+  userAgent: string,
   totalStreamedBytes: number,
   totalStreamedTime: number,
   bufferingEvents: number,
   bufferingTime: number,
-  levels: MediaLevel[],
-  screenSizes: string[]
-
+  mediaLevels: MediaLevel[],
+  downloadRate: number,
+  bandwidth: number,
+  screenSizes: ScreenSize[]
 }
 
 export interface Session {

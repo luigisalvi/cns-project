@@ -15,6 +15,8 @@ import { StreamingComponent } from './streaming/streaming.component';
 import { StreamListComponent } from './stream-list/stream-list.component';
 import { SessionDashboardComponent } from './session-dashboard/session-dashboard.component';
 import { SessionNumberCardViewComponent } from './session-number-card-view/session-number-card-view.component';
+import { SessionPieChartsComponent } from './session-pie-charts/session-pie-charts.component';
+import { BackButtonComponent } from './back-button/back-button.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,8 @@ import { SessionNumberCardViewComponent } from './session-number-card-view/sessi
     StreamListComponent,
     SessionDashboardComponent,
     SessionNumberCardViewComponent,
+    SessionPieChartsComponent,
+    BackButtonComponent,
   ],
     imports: [
         BrowserModule,

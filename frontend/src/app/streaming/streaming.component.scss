@@ -6,17 +6,17 @@
     justify-content: space-between;
   }
 
-  .inner {
-    /* centered vertically */
-    /* flex-wrap: nowrap; */
-    /* align-content: center; */
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    margin: 20px;
-  }
+.inner {
+  /* centered vertically */
+  /* flex-wrap: nowrap; */
+  /* align-content: center; */
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 20px;
+}
 
   /* Stile per il titolo */
   h1 {

@@ -9,6 +9,7 @@ const routes: Routes = [
   {path: '', component: StreamListComponent},
   {path: 'streaming/:id', component: StreamingComponent, pathMatch: 'full'},
   {path: 'stream-dashboard/:id', component: StreamDashboardComponent},
+  {path: 'session-dashboard', component: SessionDashboardComponent},
   {path: 'session-dashboard/:id', component: SessionDashboardComponent}
 ];
 

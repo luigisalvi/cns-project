@@ -1,14 +1,72 @@
 .Container{
-    display: flex;
+  margin: 40px;
+  padding: 10px;
 }
 
-.titleNumCardCont {
+.PieChart {
+  height: 392px;
+}
+
+.charts {
+  margin-top: 40px;
+}
+
+
+.sessionDataTable {
+  table {
+    font-family: Arial, sans-serif;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 12px;
+    max-width: 200px;
+
+    span {
+      display: inline-block;
+      width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  th {
+    background-color: rgb(35, 40, 55);
+    color: white;
+    border-top: none;
+    border-left: none;
+    border-radius: 5px 5px 0 0;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  td:first-child, th:first-child {
+    border-left: none;
+  }
+
+  td:last-child, th:last-child {
+    border-right: none;
+  }
+}
+
+
+.titleNumCardCont, .titleMLDistribution, .titleSizeDistribution {
     text-align: center;
     margin-bottom: 10px;
-    font-size: 20px; 
-    color: #333; 
-    text-transform: uppercase; 
+    font-size: 20px;
+    color: #333;
+    text-transform: uppercase;
     font-weight: bold;
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
   }
-  

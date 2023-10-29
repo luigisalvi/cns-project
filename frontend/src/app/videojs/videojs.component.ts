@@ -323,7 +323,7 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  selectDashboard() {
-    this.router.navigate(['dashboard', this.streamId]);
+  selectDashboard(type: string) {
+    this.router.navigate([type + '-dashboard', this.streamId]);
   }
 }

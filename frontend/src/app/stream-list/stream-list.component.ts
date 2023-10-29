@@ -20,7 +20,7 @@ export class StreamListComponent implements OnInit {
   ngOnInit(): void {
     //Server call for session set up
     session_post();
-    
+
     //Get the list of available streams and show it through a clickable menu
     this.streams$ = streams_get()
   }
@@ -29,5 +29,8 @@ export class StreamListComponent implements OnInit {
     this.router.navigate(['streaming', stream.id])
   }
 
+  public selectDashboard() : void {
+    this.router.navigate(['session-dashboard'])
+  }
 
 }

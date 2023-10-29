@@ -1,6 +1,7 @@
 /* Stile per il player video */
 .video-container {
   margin-top: 30px;
+  margin-bottom: 20px;
 }
 
 .video-js.vjs-fluid,
@@ -8,7 +9,7 @@
 .video-js.vjs-4-3,
 video.video-js,
 video.vjs-tech {
-  max-height: calc(100vh - 250px);
+  max-height: calc(100vh - 350px);
   position: relative !important;
   width: 100%;
   height: auto !important;

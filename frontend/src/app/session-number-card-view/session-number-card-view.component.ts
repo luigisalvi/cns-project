@@ -33,15 +33,15 @@ export class SessionNumberCardViewComponent {
 
   ngOnInit(): void {
     this.metricsService.sessionAnalytics$.subscribe(sessionAnalytics => {
-      
+
       const streamId = this.streamId;
-      const targetRecord = sessionAnalytics.find(item => item.streamId == streamId);
+      const targetRecord = sessionAnalytics.find(item => item._id == streamId);
 
       if(targetRecord){
         this.totalStreamedBytes = (targetRecord.totalStreamedBytes/1e6).toFixed(2);
         this.totalStreamedTime =  this.secondsToHHMMSS(targetRecord.totalStreamedTime);
         this.totalBufferingEvents = targetRecord.bufferingEvents;
-        this.totalBufferingTime = this.secondsToHHMMSS(targetRecord.bufferingTime);
+        this.totalBufferingTime = targetRecord.bufferingTime.toFixed(3);
 
         this.single = [
           {
@@ -59,23 +59,32 @@ export class SessionNumberCardViewComponent {
           {
             name: 'Total Buffering Time',
             value: this.totalBufferingTime
-          }  
-  
-  
+          }
+
+
         ]
 
       } //if
-      
+
       else {
 
         if(sessionAnalytics && sessionAnalytics.length>0) {
+          let tStreamedBytes: number = 0;
+          let tStreamedTime: number = 0;
+          let tBufferingEvents: number = 0;
+          let tBufferingTime: number = 0;
           for (const metrics of sessionAnalytics) {
-            this.totalStreamedBytes += metrics.totalStreamedBytes;
-            this.totalStreamedTime += metrics.totalStreamedTime;
-            this.totalBufferingEvents += metrics.bufferingEvents;
-            this.totalBufferingTime += metrics.bufferingTime;
+            tStreamedBytes += (metrics.totalStreamedBytes/1e6);
+            tStreamedTime += metrics.totalStreamedTime;
+            tBufferingEvents += metrics.bufferingEvents;
+            tBufferingTime += metrics.bufferingTime;
           }
-        } 
+
+          this.totalStreamedBytes = tStreamedBytes.toFixed(2);
+          this.totalStreamedTime =  this.secondsToHHMMSS(tStreamedTime);
+          this.totalBufferingEvents = tBufferingEvents;
+          this.totalBufferingTime = tBufferingTime.toFixed(3);
+        }
 
         this.single = [
           {
@@ -93,13 +102,13 @@ export class SessionNumberCardViewComponent {
           {
             name: 'Total Buffering Time per Session',
             value: this.totalBufferingTime
-          } 
+          }
         ]
 
       } //else
 
-     
-      
+
+
       // NECESSARIO ? ? Se si aggiungere anche all'altro component
       //this.single = [...this.single];
 

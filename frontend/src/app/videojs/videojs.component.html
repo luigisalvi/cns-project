@@ -7,8 +7,16 @@
   </div>
 </div>
 
-<button mat-flat-button (click)="selectDashboard()" class="live-button">
+<button mat-flat-button (click)="selectDashboard('stream')" class="live-button">
+  <mat-icon>movie</mat-icon>
   <div class="live-button-content">
-    <span>Dashboard</span>
+    <span>Stream Dashboard</span>
+  </div>
+</button>
+
+<button mat-flat-button (click)="selectDashboard('session')" class="live-button">
+  <mat-icon>person</mat-icon>
+  <div class="live-button-content">
+    <span>Session Dashboard</span>
   </div>
 </button>

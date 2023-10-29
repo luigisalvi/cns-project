@@ -1,16 +1,37 @@
+<app-back-button></app-back-button>
+
 <div class="Container">
 
+  <div class="sessionDataTable">
+    <table>
+      <thead>
+      <tr>
+        <th *ngFor="let title of titles"><span>{{ title }}</span></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let row of data">
+        <td *ngFor="let item of row"><span title="{{ item }}">{{ item }}</span></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="charts" style="display: flex; justify-content: center; align-items: center;">
     <div class="NumCardView">
       <h2 class="titleNumCardCont "> General metrics </h2>
       <app-session-number-card-view [streamId]="streamId"></app-session-number-card-view>
     </div>
-  
-    <!--
-    <div class=" ">
-        <h2 class=" "> Title of the chart here. </h2>
-        <chart2-name></chart2-name>
-      </div>
-  
+
+    <div class="PieChart" *ngIf="streamId">
+      <h2 class="titleMLDistribution">Media Level distribution</h2>
+      <app-session-pie-charts [streamId]="streamId" [metric]="'mediaLevels'"></app-session-pie-charts>
+    </div>
+
+    <div class="PieChart" *ngIf="streamId">
+      <h2 class="titleSizeDistribution">Screen Size distribution</h2>
+      <app-session-pie-charts [streamId]="streamId" [metric]="'screenSizes'"></app-session-pie-charts>
+    </div>
   </div>
 
--->
+</div>
