@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  # Angular Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: "poliba-cns/frontend"
+    ports:
+      - "4200:4200"
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
