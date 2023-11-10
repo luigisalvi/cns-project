@@ -15,5 +15,9 @@ npm run start
 ## System Architecture
 
 <div align="center">
-<img src=architecture-diagram.png>
+<img src=frontend-arch.drawio.png>
+</div>
+
+<div align="center">
+<img src=backend-arch.drawio.png>
 </div>
