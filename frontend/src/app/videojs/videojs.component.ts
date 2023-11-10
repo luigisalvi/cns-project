@@ -6,10 +6,9 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {MediaLevel, Stream} from "@API/server.interface";
 import {interval, Subscription} from "rxjs";
 import TextTrackCue = videojs.TextTrackCueList.TextTrackCue;
-
-declare var require: any;
-require('videojs-contrib-quality-levels');
-require('@mycujoo/videojs-hls-quality-selector');
+import {environment} from "../../environment/environment";
+import 'videojs-contrib-quality-levels';
+import 'videojs-hls-quality-selector';
 
 @Component({
   selector: 'app-videojs',
@@ -31,7 +30,6 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
       'pictureInPictureToggle': false,
       'liveDisplay': true,
     },
-    plugins: { hlsQualitySelector: { displayCurrentQuality: true } },
     html5: {
       vhs: {
         //https://github.com/videojs/http-streaming#overridenative
@@ -62,12 +60,52 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   private videoStartedAt: number = 0;
   private totalSecondsWatched = 0;
 
+  private websocketServerUrl: string = environment.wsServerUrl;
+
   timer$: Subscription = new Subscription();
 
   constructor(
     private route: ActivatedRoute,
     private router: Router
   ) {
+  }
+
+
+  ngOnInit() {
+    session_post().then(
+      session => {
+        this.sessionId = session.sessionId
+      }
+    );
+
+    this.streamId = this.route.snapshot.paramMap.get('id')!
+
+
+
+    if (!this.player) {
+      this.player = videojs(this.target.nativeElement, this.options, function() {
+        this.qualityLevels();
+        this.hlsQualitySelector({ displayCurrentQuality: true });
+        this.controlBar.addChild("qualitySelector");
+      });
+    }
+
+    this.getScreenSize();
+
+    //video.js init
+    // Get first stream and streamId, setting the video source. Here, since
+    // just one video has been uploaded in the playlist, the first streamId
+    // (at 0-index) is chosen. Whenever the playlist is populated by
+    // different videos, a user input-reader is needed, in order to collect
+    // the input chosen by the user and set the appropriate index in the following line.
+    stream_get(this.streamId).then(stream => {
+
+      // Change VideoJS source
+      this.changeVideoSource(stream?.ref!);
+
+      // Track live users
+      this.trackLiveUser(this.streamId, this.sessionId);
+    });
   }
 
   // METRICS EVALUATION FUNCTIONS //
@@ -214,7 +252,7 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   trackLiveUser(streamId: string, sessionId: string) {
     // Track live users using WekSocket connection //
-    const ws = new WebSocket(`ws://localhost:3001/live-users?streamId=${streamId}&clientId=${sessionId}`);
+    const ws = new WebSocket(`${this.websocketServerUrl}/live-users?streamId=${streamId}&clientId=${sessionId}`);
 
     ws.onopen = () => {
     };
@@ -234,43 +272,6 @@ export class VjsPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   sessionId: string = '';
 
-  ngOnInit() {
-    session_post().then(
-      session => {
-        this.sessionId = session.sessionId
-      }
-    );
-
-    this.streamId = this.route.snapshot.paramMap.get('id')!
-
-    //video.js init
-    if (!this.player) {
-      this.player = videojs(this.target.nativeElement, this.options, function onPlayerReady() {
-        // @ts-ignore
-        this.hlsQualitySelector({ displayCurrentQuality: true })
-        // @ts-ignore
-        this.controlBar.addChild("qualitySelector")
-      });
-
-    }
-
-    this.getScreenSize();
-
-    // Get first stream and streamId, setting the video source. Here, since
-    // just one video has been uploaded in the playlist, the first streamId
-    // (at 0-index) is chosen. Whenever the playlist is populated by
-    // different videos, a user input-reader is needed, in order to collect
-    // the input chosen by the user and set the appropriate index in the following line.
-    stream_get(this.streamId).then(stream => {
-
-      // Change VideoJS source
-      this.changeVideoSource(stream?.ref!);
-
-      // Track live users
-      this.trackLiveUser(this.streamId, this.sessionId);
-    });
-
-  }
 
   ngAfterViewInit(): void {
     // Event Listeners

@@ -20,13 +20,15 @@
     "@angular/platform-browser": "^16.2.0",
     "@angular/platform-browser-dynamic": "^16.2.0",
     "@angular/router": "^16.2.0",
-    "@mycujoo/videojs-hls-quality-selector": "^1.1.5-rc.4",
     "@swimlane/ngx-charts": "^20.4.1",
     "@types/videojs-contrib-quality-levels": "^2.0.3",
+    "@types/videojs-hls-quality-selector": "^1.1.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "videojs-contrib-hls": "^1.3.12",
     "videojs-contrib-quality-levels": "^3.0.0",
+    "videojs-hls-quality-selector": "^1.1.4",
+    "videojs-http-source-selector": "^1.1.6",
     "ws": "^8.14.2",
     "zone.js": "~0.13.0"
   },
@@ -46,6 +48,6 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "^4.9.4",
-    "video.js": "^7.21.5"
+    "video.js": "^7.5.3"
   }
 }

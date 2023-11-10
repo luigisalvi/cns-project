@@ -2,8 +2,9 @@
 
 //Import these function in the videojs.component.ts and use there.
 import {MediaLevel, Session, SessionAnalytics, Stream, StreamAnalytics} from "@API/server.interface";
+import {environment} from "../environment/environment";
 
-const server = 'http://localhost:3000'
+const server = environment.httpServerUrl;
 
 // (FOR DEV.) Server call for logging of sessions'list.
 export function session_get() {

@@ -3,14 +3,16 @@ version: '3.9'
 services:
   # Angular Application
   frontend:
+    hostname: frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
     image: "poliba-cns/frontend"
     ports:
       - "4200:4200"
-    depends_on:
-      - mongodb
+    environment:
+      - HTTP_SERVER_URL=http://server:3000
+      - WS_SERVER_URL=ws://server:3001
     networks:
       - app-network
 
