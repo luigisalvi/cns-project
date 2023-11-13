@@ -1,7 +1,12 @@
+.Container {
+  display: flex;
+}
 .stream-list {
   margin: 50px;
 }
-
+.ListTitle {
+  text-align: center;
+}
 .circle {
   background: red;
   width: 8px;
@@ -10,7 +15,7 @@
   border-radius: 10px;
 }
 
-.live-button-content {
+.live-button-content, .streamkey-button-content {
   display: flex;
   align-content: center;
   align-items: center;
