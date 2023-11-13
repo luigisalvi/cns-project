@@ -56,3 +56,7 @@ export interface SessionAnalytics {
 export interface Session {
   sessionId: string,
 }
+
+export interface  StreamKey {
+  key: string,
+}

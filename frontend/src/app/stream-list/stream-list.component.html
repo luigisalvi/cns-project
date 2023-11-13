@@ -1,5 +1,5 @@
 <div class="Container"
-style="display: flex; justify-content: center; align-items: center; height: 20vh;">
+style="display: flex; justify-content: center">
   <div class="stream-list">
     <h2 class="ListTitle">List of Streams</h2>
     <ul>
@@ -12,7 +12,7 @@ style="display: flex; justify-content: center; align-items: center; height: 20vh
         </button>
       </li>
     </ul>
-  
+
     <button mat-flat-button (click)="selectDashboard()" class="live-button">
       <mat-icon>person</mat-icon>
       <div class="live-button-content">
@@ -20,12 +20,25 @@ style="display: flex; justify-content: center; align-items: center; height: 20vh
       </div>
     </button>
 
-    <button mat-flat-button (click)="null" class="streamkey-button">
+    <button mat-flat-button (click)="generateStreamKey()" class="streamkey-button">
       <mat-icon>live_tv</mat-icon>
       <div class="streamkey-button-content">
         <span>Start a live</span>
       </div>
     </button>
-  
+
+    <div *ngIf="streamKeyVisible" >
+      <div class="streamkey-button-copy">
+        <div style="display:flex; flex-direction: column;">
+          <input readonly matInput type="text" [(ngModel)]="streamKey" style="width: 300px;"/>
+          <span style="font-size: 12px;"><i>Please copy your private Stream Key</i></span>
+        </div>
+        <button mat-icon-button [cdkCopyToClipboard]="streamKey">
+          <mat-icon>file_copy</mat-icon>
+        </button>
+      </div>
+
+    </div>
+
   </div>
 </div>

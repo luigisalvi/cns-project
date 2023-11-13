@@ -1,7 +1,7 @@
 // server-api.js
 
 //Import these function in the videojs.component.ts and use there.
-import {MediaLevel, Session, SessionAnalytics, Stream, StreamAnalytics} from "@API/server.interface";
+import {MediaLevel, Session, SessionAnalytics, Stream, StreamAnalytics, StreamKey} from "@API/server.interface";
 import {environment} from "../environment/environment";
 
 const server = environment.httpServerUrl;
@@ -276,6 +276,26 @@ export function m3u8_get(streamId: string) {
     })
     .catch(error => {
       console.error('Error:', error);
+    });
+}
+
+export function generateStreamKey(): Promise<void | StreamKey> {
+  const url = server + `/streams/key`;
+
+  return fetch(url, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {'Content-type': 'application/json; charset=UTF-8'}
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error calling server');
+      }
+      return response.json() as Promise<StreamKey>;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      //return undefined;
     });
 }
 

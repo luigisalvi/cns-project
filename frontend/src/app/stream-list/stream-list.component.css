@@ -15,10 +15,14 @@
   border-radius: 10px;
 }
 
-.live-button-content, .streamkey-button-content {
+.live-button-content, .streamkey-button-content, .streamkey-button-copy {
   display: flex;
   align-content: center;
   align-items: center;
   flex-wrap: nowrap;
   gap: 8px;
+  justify-content: center;
+}
+
+.streamkey-button-copy {
 }

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {session_post, streams_get} from "@API/server-api";
-import {Stream} from "@API/server.interface";
+import {generateStreamKey, session_post, streams_get} from "@API/server-api";
+import {Stream, StreamKey} from "@API/server.interface";
 import {Router} from "@angular/router";
 
 @Component({
@@ -11,6 +11,8 @@ import {Router} from "@angular/router";
 export class StreamListComponent implements OnInit {
 
   streams$: Promise<Array<Stream>> | undefined;
+  streamKey: string = "";
+  streamKeyVisible: boolean = false;
 
   constructor(
     private router: Router
@@ -33,4 +35,10 @@ export class StreamListComponent implements OnInit {
     this.router.navigate(['session-dashboard'])
   }
 
+  public generateStreamKey(): void {
+    this.streamKeyVisible = !this.streamKeyVisible;
+    generateStreamKey().then((streamKey: void | StreamKey) => {
+      this.streamKey = streamKey?.key!;
+    })
+  }
 }

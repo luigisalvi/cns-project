@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { VjsPlayerComponent } from './videojs/videojs.component';
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from '@angular/material/icon';
 import { BarViewComponent } from './bar-view-chart/bar-view-chart.component';
@@ -17,6 +17,8 @@ import { SessionDashboardComponent } from './session-dashboard/session-dashboard
 import { SessionNumberCardViewComponent } from './session-number-card-view/session-number-card-view.component';
 import { SessionPieChartsComponent } from './session-pie-charts/session-pie-charts.component';
 import { BackButtonComponent } from './back-button/back-button.component';
+import {ClipboardModule} from "@angular/cdk/clipboard";
+import {MatInputModule} from "@angular/material/input";
 
 @NgModule({
   declarations: [
@@ -32,14 +34,17 @@ import { BackButtonComponent } from './back-button/back-button.component';
     SessionPieChartsComponent,
     BackButtonComponent,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        ReactiveFormsModule,
-        MatButtonModule,
-        MatIconModule,
-        NgxChartsModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatIconModule,
+    NgxChartsModule,
+    FormsModule,
+    ClipboardModule,
+    MatInputModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })
